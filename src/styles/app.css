@@ -1,0 +1,29 @@
+/* Minimal bootstrap styles — full design tokens land in Step 03. */
+:root {
+  --bg: #070810;
+  --ink: #eef1fb;
+  --bingo: #2ee6c6;
+  --font: "Heebo", "Assistant", system-ui, "Segoe UI", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background:
+    radial-gradient(900px 600px at 18% -5%, #11203a 0, transparent 55%),
+    radial-gradient(800px 600px at 92% 108%, #241433 0, transparent 55%),
+    var(--bg);
+}
+.splash {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.splash .wordmark { font-size: 34px; font-weight: 900; letter-spacing: .5px; }
+.splash .wordmark .u { color: var(--bingo); text-shadow: 0 0 18px rgba(46, 230, 198, .5); }
+.splash .tag { color: #8b94ad; font-size: 14px; }

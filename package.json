@@ -1,0 +1,22 @@
+{
+  "name": "under-the-desk",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "מתחת לשולחן — covert in-lecture multiplayer mini-games (PeerJS P2P + same-device fallback)",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "peerjs": "^1.5.4",
+    "qrcode": "^1.5.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  }
+}

@@ -1,0 +1,389 @@
+<!doctype html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מתחת לשולחן — Design Mockup</title>
+<style>
+  /* ===== Design tokens — dark "stealth" base + neon game-show accents ===== */
+  :root{
+    --bg:#070810; --bg-2:#0c0e18;
+    --panel:#141826; --panel-2:#1b2030; --panel-3:#232a3d;
+    --line:rgba(255,255,255,.07); --line-2:rgba(255,255,255,.13);
+    --ink:#eef1fb; --muted:#8b94ad; --faint:#59617a;
+    /* signature game accents */
+    --bingo:#2ee6c6; --counter:#ffb23e; --trivia:#a47bff;
+    --poll:#ff5b94; --reaction:#7dff58; --predict:#4d9bff;
+    --accent:var(--bingo);
+    --r:20px; --r-sm:13px;
+    --font:"Heebo","Assistant",system-ui,"Segoe UI",Arial,sans-serif;
+    --glow:0 0 0 1px rgba(46,230,198,.35), 0 10px 30px rgba(46,230,198,.18);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font);color:var(--ink);
+    background:
+      radial-gradient(900px 600px at 18% -5%, #11203a 0, transparent 55%),
+      radial-gradient(800px 600px at 92% 108%, #241433 0, transparent 55%),
+      var(--bg);
+    padding:30px 22px 60px}
+  h1.title{text-align:center;margin:0 0 4px;font-size:26px;letter-spacing:.3px}
+  h1.title .u{color:var(--bingo);text-shadow:0 0 22px rgba(46,230,198,.55)}
+  p.sub{text-align:center;color:var(--muted);margin:0 0 8px;font-size:13.5px}
+
+  /* game accent chips legend */
+  .legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:720px;margin:14px auto 26px}
+  .gchip{display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);
+    border-radius:999px;padding:6px 12px 6px 10px;font-size:12.5px;font-weight:700}
+  .gchip i{width:11px;height:11px;border-radius:50%;display:block;box-shadow:0 0 10px currentColor}
+  .gchip .e{font-size:14px}
+
+  .gallery{display:flex;flex-wrap:wrap;gap:30px;justify-content:center;align-items:flex-start}
+
+  /* ===== phone frame ===== */
+  .phone{width:300px;border-radius:40px;padding:11px;background:linear-gradient(160deg,#20242f,#0c0e15);
+    box-shadow:0 2px 0 rgba(255,255,255,.05) inset, 0 24px 50px rgba(0,0,0,.6);border:1px solid #2a2f3d}
+  .phone .notch{height:22px;display:flex;justify-content:center;align-items:flex-start}
+  .phone .notch::before{content:"";width:108px;height:7px;border-radius:99px;background:#000;margin-top:5px}
+  .label{font-weight:800;text-align:center;margin:0 0 9px;font-size:12.5px;color:var(--muted);letter-spacing:.4px}
+  .screen{background:linear-gradient(180deg,var(--bg-2),#080a12);border-radius:30px;height:560px;position:relative;
+    overflow:hidden;border:1px solid var(--line)}
+  .pad{position:absolute;inset:0;display:flex;flex-direction:column;padding:18px 16px}
+
+  /* top status row (covert + connection) */
+  .top{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:4px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--reaction);box-shadow:0 0 8px var(--reaction);display:inline-block;margin-inline-start:5px;vertical-align:middle}
+  .stealth{display:flex;align-items:center;gap:5px}
+
+  .wordmark{font-size:23px;font-weight:900;letter-spacing:.5px}
+  .wordmark .u{color:var(--bingo);text-shadow:0 0 18px rgba(46,230,198,.5)}
+  .tag{color:var(--muted);font-size:12px;margin-top:2px}
+
+  .btn{border:none;border-radius:16px;padding:15px 16px;font-weight:800;font-family:var(--font);font-size:16px;
+    cursor:pointer;width:100%;color:#061018;letter-spacing:.3px}
+  .btn.primary{background:linear-gradient(180deg,#3ff0d2,#16c4a6);color:#04231d;box-shadow:0 8px 24px rgba(46,230,198,.35),0 0 0 1px rgba(46,230,198,.4) inset}
+  .btn.ghost{background:var(--panel-2);color:var(--ink);box-shadow:0 0 0 1px var(--line-2) inset}
+  .btn.dim{background:transparent;color:var(--muted);font-weight:700;font-size:13.5px;padding:11px;box-shadow:none}
+  .btn.dim u{color:var(--bingo);text-decoration:none;border-bottom:1px dashed rgba(46,230,198,.5)}
+
+  .spacer{flex:1}
+
+  /* ===== 1. HOME ===== */
+  .home-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;margin-top:30px}
+  .badge{width:78px;height:78px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:38px;
+    background:radial-gradient(circle at 35% 30%,#1d2536,#0e1320);border:1px solid var(--line-2);
+    box-shadow:0 0 36px rgba(46,230,198,.18),0 14px 30px rgba(0,0,0,.5);margin-bottom:6px}
+  .home-actions{display:flex;flex-direction:column;gap:11px;margin-top:auto}
+  .joinrow{display:flex;gap:9px}
+  .code-in{flex:1;background:var(--panel);border:1px dashed var(--line-2);border-radius:16px;color:var(--muted);
+    display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;letter-spacing:5px;font-family:ui-monospace,monospace}
+  .nudge{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:11px 13px;display:flex;
+    gap:10px;align-items:center;text-align:right;margin-top:4px}
+  .nudge .e{font-size:20px}
+  .nudge b{font-size:13px;display:block}
+  .nudge span{font-size:11.5px;color:var(--muted)}
+
+  /* ===== 2. INVITE ===== */
+  .codebox{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--line-2);
+    border-radius:var(--r);padding:14px;text-align:center;box-shadow:0 0 30px rgba(46,230,198,.1)}
+  .codebox .cap{font-size:11.5px;color:var(--muted);margin-bottom:6px}
+  .code{font-family:ui-monospace,"SFMono-Regular",monospace;font-size:38px;font-weight:800;letter-spacing:9px;
+    color:var(--bingo);text-shadow:0 0 20px rgba(46,230,198,.45);direction:ltr}
+  .codebox .copy{margin-top:6px;font-size:11.5px;color:var(--muted)}
+  .qrwrap{display:flex;align-items:center;gap:13px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;margin-top:11px}
+  .qr{width:96px;height:96px;border-radius:10px;background:#fff;padding:7px;flex:none}
+  .qr canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
+  .qrwrap .qmeta b{font-size:13px}
+  .qrwrap .qmeta span{font-size:11.5px;color:var(--muted);display:block;margin-top:2px}
+  .qrwrap .link{font-size:11px;color:var(--bingo);direction:ltr;margin-top:6px;word-break:break-all;opacity:.85}
+
+  .roster-h{display:flex;justify-content:space-between;align-items:center;margin:14px 2px 8px;font-size:12.5px}
+  .roster-h .ttl{font-weight:800}
+  .roster-h .cnt{color:var(--muted)}
+  .pill{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:8px 11px;margin-bottom:7px;font-size:13.5px;font-weight:700}
+  .pill .av{width:22px;height:22px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;color:#04120f;font-weight:900}
+  .pill.host .av{background:var(--bingo)} .pill.host .role{color:var(--bingo)}
+  .pill .role{margin-inline-start:auto;font-size:11px;color:var(--muted)}
+  .pill.fresh{animation:pop .5s ease}
+  @keyframes pop{0%{transform:scale(.85);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+
+  /* ===== 3. BINGO ===== */
+  .game-top{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+  .game-ico{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;
+    background:rgba(46,230,198,.13);border:1px solid rgba(46,230,198,.35)}
+  .game-top .gt{font-weight:800;font-size:15px}
+  .game-top .gs{font-size:11px;color:var(--muted)}
+  .game-top .live{margin-inline-start:auto;font-size:10.5px;color:var(--reaction);font-weight:800}
+  .presence{font-size:11.5px;color:var(--bingo);text-align:center;margin-bottom:8px;opacity:.9}
+  .board{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+  .cell{aspect-ratio:1;border-radius:11px;background:var(--panel);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;text-align:center;font-size:10.5px;font-weight:700;
+    line-height:1.15;padding:3px;color:#cfd6e8}
+  .cell.mark{background:linear-gradient(180deg,rgba(46,230,198,.9),rgba(22,196,166,.8));color:#04231d;
+    border-color:transparent;box-shadow:0 0 16px rgba(46,230,198,.5);transform:scale(1.02)}
+  .cell.free{background:var(--panel-3);border-style:dashed;border-color:var(--line-2);color:var(--bingo);font-weight:900}
+  .cell.line{outline:2px solid var(--bingo);outline-offset:1px}
+  .bingo-cta{margin-top:auto;display:flex;flex-direction:column;gap:9px}
+  .claim{background:var(--panel-2);border:1px solid rgba(46,230,198,.4);border-radius:16px;padding:13px;text-align:center;
+    font-weight:800;color:var(--bingo);font-size:15px}
+
+  /* ===== 4. RESULTS ===== */
+  .res-top{text-align:center;margin-top:18px}
+  .res-banner{font-size:40px;font-weight:900;color:var(--bingo);text-shadow:0 0 26px rgba(46,230,198,.55);letter-spacing:1px}
+  .res-sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .winner{display:flex;flex-direction:column;align-items:center;gap:6px;margin:14px 0 4px}
+  .crown{font-size:44px;filter:drop-shadow(0 6px 14px rgba(46,230,198,.35));animation:bob 1.6s ease-in-out infinite alternate}
+  @keyframes bob{to{transform:translateY(-5px) rotate(-3deg)}}
+  .board-scores{margin-top:10px;display:flex;flex-direction:column;gap:7px}
+  .row{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 11px;font-size:13.5px}
+  .row .rk{width:20px;color:var(--muted);font-weight:800;text-align:center}
+  .row.first{border-color:rgba(46,230,198,.45);background:linear-gradient(90deg,rgba(46,230,198,.12),var(--panel))}
+  .row .av{width:24px;height:24px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;color:#04120f;font-weight:900}
+  .row .nm{font-weight:700}
+  .row .pts{margin-inline-start:auto;font-weight:900;font-family:ui-monospace,monospace}
+  .confetti span{position:absolute;font-size:15px;animation:fall 2.6s linear infinite;opacity:.9}
+  @keyframes fall{from{transform:translateY(-24px) rotate(0)}to{transform:translateY(580px) rotate(220deg)}}
+
+  /* ===== laptop / host-MC framing ===== */
+  .laptop{width:560px;max-width:92vw}
+  .lid{background:linear-gradient(160deg,#1c2030,#0b0d15);border:1px solid #2a2f3d;border-radius:18px 18px 4px 4px;
+    padding:13px;box-shadow:0 26px 60px rgba(0,0,0,.6)}
+  .base{height:13px;background:linear-gradient(#23283a,#11141d);border-radius:0 0 13px 13px;margin:0 auto;width:96%;
+    box-shadow:0 10px 18px rgba(0,0,0,.5)}
+  .base::after{content:"";display:block;width:90px;height:5px;background:#0a0c12;border-radius:0 0 8px 8px;margin:0 auto}
+  .mc{background:linear-gradient(180deg,#0b0e18,#070912);border-radius:11px;height:330px;position:relative;overflow:hidden;
+    border:1px solid var(--line);display:flex}
+  .mc .left{flex:1.15;padding:26px 30px;display:flex;flex-direction:column}
+  .mc .right{flex:1;border-inline-start:1px solid var(--line);padding:24px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+    background:radial-gradient(400px 300px at 70% 30%,rgba(46,230,198,.07),transparent)}
+  .mc .wm{font-size:21px;font-weight:900}
+  .mc .wm .u{color:var(--bingo)}
+  .mc .hl{font-size:14px;color:var(--muted);margin-top:6px}
+  .mc .joincode{font-family:ui-monospace,monospace;font-size:74px;font-weight:800;letter-spacing:11px;color:var(--bingo);
+    text-shadow:0 0 34px rgba(46,230,198,.5);direction:ltr;margin:auto 0}
+  .mc .joinhint{font-size:13px;color:var(--muted)}
+  .mc .joinhint b{color:var(--ink)}
+  .mc .qrbig{width:140px;height:140px;background:#fff;border-radius:14px;padding:9px}
+  .mc .qrbig canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
+  .mc .joined{font-size:12.5px;color:var(--muted)}
+  .mc .joined b{color:var(--reaction)}
+  .mc .miniroster{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
+  .mc .mr{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:12px;font-weight:700}
+
+  .note{max-width:880px;margin:34px auto 0;background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:17px 22px;color:#b9c0d4;line-height:1.65;font-size:13.5px}
+  .note b{color:var(--bingo)}
+  .frames{display:flex;gap:16px;justify-content:center;align-items:flex-end;margin-top:14px;flex-wrap:wrap}
+  .mini{text-align:center;font-size:11px;font-weight:800;color:var(--muted)}
+  .mini .scr{background:linear-gradient(180deg,#0c0e18,#080a12);border:1px solid var(--line);border-radius:10px;margin-top:6px;
+    display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:10px}
+  .mini.ph .scr{width:96px;height:170px;border-radius:18px}
+  .mini.tb .scr{width:150px;height:120px}
+  .mini.lp .scr{width:210px;height:124px}
+</style>
+</head>
+<body>
+  <h1 class="title"><span class="u">מתחת לשולחן</span> · Visual Mockup</h1>
+  <p class="sub">dark "stealth" base · neon game-show accents · glanceable · RTL · אימוג'י = placeholders</p>
+
+  <div class="legend">
+    <span class="gchip"><i style="color:var(--bingo)"></i><span class="e">🟩</span>בינגו מילים</span>
+    <span class="gchip"><i style="color:var(--counter)"></i><span class="e">🔢</span>מונה אירועים</span>
+    <span class="gchip"><i style="color:var(--trivia)"></i><span class="e">🧠</span>חידון</span>
+    <span class="gchip"><i style="color:var(--poll)"></i><span class="e">🗳️</span>מי צודק</span>
+    <span class="gchip"><i style="color:var(--reaction)"></i><span class="e">⚡</span>מי ראשון</span>
+    <span class="gchip"><i style="color:var(--predict)"></i><span class="e">🔮</span>ניחושים</span>
+  </div>
+
+  <div class="gallery">
+
+    <!-- 1. HOME -->
+    <div class="phone">
+      <div class="notch"></div>
+      <p class="label">① בית — צור / הצטרף</p>
+      <div class="screen">
+        <div class="pad">
+          <div class="top"><span class="stealth"><span class="dot"></span>שקט · מצב חשאי</span><span>21:43 ▮▮▮</span></div>
+          <div class="home-hero">
+            <div class="badge">🤫</div>
+            <div class="wordmark">מתחת <span class="u">לשולחן</span></div>
+            <div class="tag">משחקים קטנים. הרצאה אחת ארוכה. הם לא ישימו לב.</div>
+          </div>
+          <div class="home-actions">
+            <button class="btn primary">צור חדר</button>
+            <div class="joinrow">
+              <div class="code-in">— — — — — —</div>
+              <button class="btn ghost" style="width:auto;padding-inline:18px">הצטרף</button>
+            </div>
+            <div class="nudge">
+              <span class="e">📱</span>
+              <div><b>אין עם מי? מצב מכשיר אחד</b><span>מעבירים טלפון אחד בשולחן — בלי רשת בכלל.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. INVITE -->
+    <div class="phone">
+      <div class="notch"></div>
+      <p class="label">② הזמנה — קוד · QR · מי הצטרף</p>
+      <div class="screen">
+        <div class="pad">
+          <div class="top"><span class="stealth"><span class="dot"></span>החדר פתוח</span><span>בינגו מילים 🟩</span></div>
+          <div class="codebox">
+            <div class="cap">קוד חדר — תנו לחברים להקליד</div>
+            <div class="code">K7QF2P</div>
+            <div class="copy">הקש להעתקה · 📋</div>
+          </div>
+          <div class="qrwrap">
+            <div class="qr"><canvas id="qr1" width="25" height="25"></canvas></div>
+            <div class="qmeta">
+              <b>או לסרוק</b>
+              <span>שולח/ת לוואטסאפ? יש לינק.</span>
+              <div class="link">utd.app/?room=K7QF2P</div>
+            </div>
+          </div>
+          <div class="roster-h"><span class="ttl">מי הצטרף</span><span class="cnt">3 בחדר</span></div>
+          <div class="pill host"><span class="av">מ</span>מיכל<span class="role">מנחה</span></div>
+          <div class="pill"><span class="av" style="background:var(--poll)">ד</span>דנה<span class="role">מוכנה</span></div>
+          <div class="pill fresh"><span class="av" style="background:var(--counter)">ע</span>עידו<span class="role">🎉 הרגע הצטרף</span></div>
+          <button class="btn primary" style="margin-top:auto">התחל ▸</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. BINGO -->
+    <div class="phone">
+      <div class="notch"></div>
+      <p class="label">③ בינגו מילים — לוח 5×5</p>
+      <div class="screen">
+        <div class="pad">
+          <div class="game-top">
+            <div class="game-ico">🟩</div>
+            <div><div class="gt">בינגו מילים</div><div class="gs">סמנו כשהמרצה אומר</div></div>
+            <div class="live">● LIVE</div>
+          </div>
+          <div class="presence">⌁ 3 שחקנים סימנו "בעצם"</div>
+          <div class="board">
+            <div class="cell">בעצם</div>
+            <div class="cell mark">שאלה טובה</div>
+            <div class="cell">טריוויאלי</div>
+            <div class="cell">אז…</div>
+            <div class="cell mark line">נמשיך</div>
+            <div class="cell">ברור</div>
+            <div class="cell mark">המקרן נתקע</div>
+            <div class="cell">"זוכרים?"</div>
+            <div class="cell mark line">תרגיל לבית</div>
+            <div class="cell">בגדול</div>
+            <div class="cell">סליחה</div>
+            <div class="cell">שנייה</div>
+            <div class="cell free">חינם ✦</div>
+            <div class="cell mark line">נחזור</div>
+            <div class="cell">אינטואיטיבי</div>
+            <div class="cell mark">"כמובן"</div>
+            <div class="cell">יבש</div>
+            <div class="cell">מובן מאליו</div>
+            <div class="cell mark line">נגזרת</div>
+            <div class="cell">בקיצור</div>
+            <div class="cell">לכן</div>
+            <div class="cell">מצוין</div>
+            <div class="cell mark">חורג מהזמן</div>
+            <div class="cell">בהמשך</div>
+            <div class="cell mark line">סוף סוף</div>
+          </div>
+          <div class="bingo-cta">
+            <div class="claim">✦ שורה שלמה! לחצו לקריאת בינגו</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. RESULTS -->
+    <div class="phone">
+      <div class="notch"></div>
+      <p class="label">④ תוצאות — מי ניצח</p>
+      <div class="screen">
+        <div class="confetti">
+          <span style="right:24px">🎉</span><span style="right:120px;animation-delay:.7s">✨</span>
+          <span style="left:30px;animation-delay:1.2s">🎊</span><span style="left:110px;animation-delay:.35s">⭐</span>
+          <span style="right:200px;animation-delay:1.6s">🟩</span>
+        </div>
+        <div class="pad">
+          <div class="res-top">
+            <div class="res-banner">בינגו!</div>
+            <div class="res-sub">דנה השלימה שורה ראשונה</div>
+          </div>
+          <div class="winner"><div class="crown">👑</div></div>
+          <div class="board-scores">
+            <div class="row first"><span class="rk">1</span><span class="av" style="background:var(--poll)">ד</span><span class="nm">דנה</span><span class="pts">בינגו</span></div>
+            <div class="row"><span class="rk">2</span><span class="av" style="background:var(--counter)">ע</span><span class="nm">עידו</span><span class="pts">4 שורות</span></div>
+            <div class="row"><span class="rk">3</span><span class="av" style="background:var(--bingo)">מ</span><span class="nm">מיכל</span><span class="pts">3 שורות</span></div>
+          </div>
+          <div style="margin-top:auto;display:flex;flex-direction:column;gap:9px">
+            <button class="btn primary">סיבוב נוסף ↻</button>
+            <button class="btn dim">חזרה ללובי · <u>בחרו משחק אחר</u></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- laptop / host-MC framing -->
+  <div style="display:flex;justify-content:center;margin-top:38px">
+    <div class="laptop">
+      <p class="label">💻 מסך מנחה (לפטופ / מקרן) — הקוד גדול, כולם סורקים</p>
+      <div class="lid">
+        <div class="mc">
+          <div class="left">
+            <div class="wm">מתחת <span class="u">לשולחן</span></div>
+            <div class="hl">הקלידו את הקוד או סרקו — ומצטרפים מהטלפון</div>
+            <div class="joincode">K7QF2P</div>
+            <div class="joinhint">היכנסו ל־<b>utd.app</b> · או סרקו את הקוד ←</div>
+          </div>
+          <div class="right">
+            <div class="qrbig"><canvas id="qr2" width="29" height="29"></canvas></div>
+            <div class="joined"><b>3</b> כבר בפנים</div>
+            <div class="miniroster"><span class="mr">מיכל · מנחה</span><span class="mr">דנה</span><span class="mr">עידו 🎉</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="base"></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>הערות עיצוב:</b> בסיס כהה "חשאי" לדיסקרטיות באמצע הרצאה + ניאון של משחק טלוויזיוני כשמתחילים
+    לשחק. כל אחד מששת המשחקים מקבל <b>צבע חתימה + אייקון</b> (ראו צ'יפים למעלה). מטרות מגע גדולות
+    (≥44px), מצב גלוי במבט חטוף, שקט כברירת מחדל עם "מצב רעש" אופציונלי. הקוד והקישור הם
+    Kahoot-style דרך ה-PeerJS broker; <b>מצב מכשיר אחד</b> תמיד זמין כגיבוי. עברית RTL, מספרים/קוד
+    נשארים LTR. האימוג'י הם placeholders.
+    <div class="frames">
+      <div class="mini ph">📱 טלפון (השחקן)<div class="scr">לוח מלא · אגודל אחד</div></div>
+      <div class="mini tb">📱 טאבלט<div class="scr">אותו ממשק · כתיבת תוכן נוחה</div></div>
+      <div class="mini lp">💻 לפטופ (מנחה)<div class="scr">קוד/QR ענקיים · ניהול קצב</div></div>
+    </div>
+  </div>
+
+<script>
+  // deterministic QR-style placeholder (finder patterns + stable pseudo-random modules)
+  function drawQR(id,n){
+    var c=document.getElementById(id); if(!c) return; var x=c.getContext('2d');
+    x.fillStyle='#fff'; x.fillRect(0,0,n,n);
+    var seed=id==='qr1'?9173:4421;
+    function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;}
+    x.fillStyle='#0a0d14';
+    for(var i=0;i<n;i++)for(var j=0;j<n;j++){ if(rnd()>0.52) x.fillRect(i,j,1,1); }
+    function finder(ox,oy){
+      x.fillStyle='#0a0d14'; x.fillRect(ox,oy,7,7);
+      x.fillStyle='#fff'; x.fillRect(ox+1,oy+1,5,5);
+      x.fillStyle='#0a0d14'; x.fillRect(ox+2,oy+2,3,3);
+    }
+    function clear(ox,oy){x.fillStyle='#fff';x.fillRect(ox,oy,8,8);}
+    clear(0,0);finder(0,0); clear(n-8,0);finder(n-7,0); clear(0,n-8);finder(0,n-7);
+  }
+  drawQR('qr1',25); drawQR('qr2',29);
+</script>
+</body>
+</html>
