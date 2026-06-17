@@ -412,6 +412,32 @@ input { font-family: inherit; }
 .q-opt .input { flex: 1; padding: 9px 11px; }
 .q-opt.is-correct .input { border-color: rgba(125, 255, 88, 0.5); }
 
+/* ===== PREDICTIONS ===== */
+.predict-list { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex: 1; }
+.predict-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.predict-card.hit { border-color: rgba(125, 255, 88, 0.5); background: linear-gradient(90deg, rgba(125, 255, 88, 0.1), var(--panel)); }
+.predict-card.miss { border-color: var(--line); opacity: 0.78; }
+.predict-text { font-size: 15px; font-weight: 700; line-height: 1.35; margin-bottom: 9px; display: flex; align-items: center; gap: 8px; }
+.predict-mark { margin-inline-start: auto; font-size: 18px; font-weight: 900; }
+.predict-card.hit .predict-mark { color: var(--reaction); }
+.predict-card.miss .predict-mark { color: var(--poll); }
+.predict-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.predict-chip {
+  flex: 1; min-width: 72px; min-height: 46px; padding: 11px 14px; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--line-2); background: var(--panel-2); color: var(--ink); font-weight: 700; font-size: 14.5px;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  transition: transform 0.12s var(--ease), border-color 0.18s var(--ease), background 0.18s var(--ease);
+}
+.predict-chip:not(:disabled):active { transform: scale(0.96); }
+.predict-chip.mine { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; color: var(--accent); }
+.predict-chip.actual { border-color: var(--reaction); background: rgba(125, 255, 88, 0.16); color: var(--reaction); }
+.predict-chip.host { border-style: dashed; border-color: rgba(var(--accent-rgb), 0.5); background: var(--panel); }
+.predict-host-mark { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line-2); }
+.predict-host-q { font-size: 12px; color: var(--accent); font-weight: 800; display: block; margin-bottom: 7px; }
+
 /* ===== RESULTS ===== */
 .res-top { text-align: center; margin-top: 18px; }
 .res-banner { font-size: 40px; font-weight: 900; color: var(--accent); text-shadow: 0 0 26px rgba(var(--accent-rgb), 0.55); letter-spacing: 1px; }

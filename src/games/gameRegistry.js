@@ -131,3 +131,21 @@ registerGame('trivia', {
     ],
   },
 });
+
+import Predictions from './predictions/Predictions.jsx';
+import { createPredictionsHostLogic } from './predictions/hostLogic.js';
+import { createPredictionsBot } from './predictions/bot.js';
+
+registerGame('predictions', {
+  Component: Predictions,
+  createHostLogic: createPredictionsHostLogic,
+  createBot: createPredictionsBot,
+  defaultConfig: {
+    items: [
+      { text: 'המרצה יחרוג מהזמן' },
+      { text: 'המקרן ייתקע לפחות פעם אחת' },
+      { text: 'מישהו ישאל "זה במבחן?"' },
+      { text: 'נשמע את המילה "טריוויאלי"' },
+    ],
+  },
+});

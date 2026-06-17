@@ -251,9 +251,37 @@ const triviaEditor = {
   },
 };
 
+const predictionsEditor = {
+  defaultPackName: 'הניחושים שלי',
+  empty: () => ({ items: [{ text: '' }] }),
+  fromPack: (p) => ({ items: (p.items && p.items.length ? p.items : [{ text: '' }]).map((it) => ({ text: it.text || '' })) }),
+  fromConfig: function (c) { return this.fromPack(c); },
+  toPack: (c) => ({ items: c.items.map((it) => ({ text: it.text.trim() })).filter((it) => it.text) }),
+  toConfig: (c) => ({ items: c.items.map((it) => ({ text: it.text.trim() })).filter((it) => it.text) }),
+  valid: (c) => c.items.map((it) => it.text.trim()).filter(Boolean).length >= 1,
+  Body: function PredictionsBody({ config, setConfig }) {
+    function setText(i, v) { setConfig({ items: config.items.map((it, k) => (k === i ? { text: v } : it)) }); }
+    function addItem() { setConfig({ items: [...config.items, { text: '' }] }); }
+    function removeItem(i) { if (config.items.length > 1) setConfig({ items: config.items.filter((_, k) => k !== i) }); }
+    return (
+      <div className="field">
+        <label>על מה מנחשים? (כל שורה — כן/לא בסוף ההרצאה)</label>
+        {config.items.map((it, i) => (
+          <div className="opt-row" key={i}>
+            <input className="input" value={it.text} onChange={(e) => setText(i, e.target.value)} dir="auto" placeholder="המרצה יחרוג מהזמן" />
+            {config.items.length > 1 && <button className="opt-x" onClick={() => removeItem(i)} aria-label="הסרה">×</button>}
+          </div>
+        ))}
+        <button className="btn ghost" style={{ minHeight: 42, padding: 10 }} onClick={addItem}>+ ניחוש</button>
+      </div>
+    );
+  },
+};
+
 const EDITORS = {
   bingo: bingoEditor,
   counter: counterEditor,
   poll: pollEditor,
   trivia: triviaEditor,
+  predictions: predictionsEditor,
 };
