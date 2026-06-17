@@ -396,6 +396,22 @@ input { font-family: inherit; }
 }
 .opt-x:hover { color: var(--poll); border-color: rgba(255, 91, 148, 0.4); }
 
+/* ===== TRIVIA ===== */
+.trivia-opt.correct {
+  border-color: var(--reaction); background: rgba(125, 255, 88, 0.14);
+  box-shadow: 0 0 0 1px var(--reaction) inset, 0 0 18px rgba(125, 255, 88, 0.25);
+}
+.trivia-opt.correct .poll-opt-label { color: var(--reaction); }
+.trivia-opt.wrong { border-color: var(--poll); background: rgba(255, 91, 148, 0.12); }
+.trivia-opt.wrong .poll-opt-label { color: var(--poll); text-decoration: line-through; opacity: 0.85; }
+
+/* trivia editor question cards */
+.q-card { background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 11px; margin-bottom: 10px; }
+.q-opt { display: flex; align-items: center; gap: 9px; margin-top: 7px; }
+.q-opt input[type="radio"] { width: 20px; height: 20px; flex: none; accent-color: var(--reaction); cursor: pointer; }
+.q-opt .input { flex: 1; padding: 9px 11px; }
+.q-opt.is-correct .input { border-color: rgba(125, 255, 88, 0.5); }
+
 /* ===== RESULTS ===== */
 .res-top { text-align: center; margin-top: 18px; }
 .res-banner { font-size: 40px; font-weight: 900; color: var(--accent); text-shadow: 0 0 26px rgba(var(--accent-rgb), 0.55); letter-spacing: 1px; }

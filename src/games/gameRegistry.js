@@ -115,3 +115,19 @@ registerGame('poll', {
   createBot: createPollBot,
   defaultConfig: { question: 'מה יותר חשוב לפני בוחן?', options: ['קפה', 'שינה', 'שניהם', 'אף אחד — פאניקה'] },
 });
+
+import Trivia from './trivia/Trivia.jsx';
+import { createTriviaHostLogic } from './trivia/hostLogic.js';
+import { createTriviaBot } from './trivia/bot.js';
+
+registerGame('trivia', {
+  Component: Trivia,
+  createHostLogic: createTriviaHostLogic,
+  createBot: createTriviaBot,
+  defaultConfig: {
+    questions: [
+      { q: 'באיזו עיר שוכנת אוניברסיטת בן-גוריון?', options: ['באר שבע', 'תל אביב', 'חיפה', 'אילת'], correct: 0 },
+      { q: 'מהי הנגזרת של sin(x)?', options: ['cos(x)', '-cos(x)', 'tan(x)', '-sin(x)'], correct: 0 },
+    ],
+  },
+});

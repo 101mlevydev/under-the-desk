@@ -207,8 +207,53 @@ const pollEditor = {
   },
 };
 
+const blankQuestion = () => ({ q: '', options: ['', '', '', ''], correct: 0 });
+const cleanQuestions = (qs) => qs
+  .map((q) => ({ q: (q.q || '').trim(), options: q.options.map((o) => (o || '').trim()).filter(Boolean), correct: q.correct | 0 }))
+  .filter((q) => q.q && q.options.length >= 2)
+  .map((q) => ({ ...q, correct: Math.min(q.correct, q.options.length - 1) }));
+
+const triviaEditor = {
+  defaultPackName: 'החידון שלי',
+  empty: () => ({ questions: [blankQuestion()] }),
+  fromPack: (p) => ({ questions: (p.questions && p.questions.length ? p.questions : [blankQuestion()]).map((q) => ({ q: q.q || '', options: [...(q.options || []), '', '', '', ''].slice(0, Math.max(4, (q.options || []).length)), correct: q.correct | 0 })) }),
+  fromConfig: function (c) { return this.fromPack(c); },
+  toPack: (c) => ({ questions: cleanQuestions(c.questions) }),
+  toConfig: (c) => ({ questions: cleanQuestions(c.questions) }),
+  valid: (c) => cleanQuestions(c.questions).length >= 1,
+  Body: function TriviaBody({ config, setConfig }) {
+    function patch(qi, fn) {
+      const questions = config.questions.map((q, i) => (i === qi ? fn(q) : q));
+      setConfig({ questions });
+    }
+    function addQ() { setConfig({ questions: [...config.questions, blankQuestion()] }); }
+    function removeQ(qi) { if (config.questions.length > 1) setConfig({ questions: config.questions.filter((_, i) => i !== qi) }); }
+    return (
+      <div className="field">
+        <label>שאלות · סמנו את התשובה הנכונה (◯)</label>
+        {config.questions.map((q, qi) => (
+          <div className="q-card" key={qi}>
+            <div className="opt-row">
+              <input className="input" value={q.q} onChange={(e) => patch(qi, (x) => ({ ...x, q: e.target.value }))} dir="auto" placeholder={`שאלה ${qi + 1}`} />
+              {config.questions.length > 1 && <button className="opt-x" onClick={() => removeQ(qi)} aria-label="הסרת שאלה">×</button>}
+            </div>
+            {q.options.map((opt, oi) => (
+              <label className={`q-opt${q.correct === oi ? ' is-correct' : ''}`} key={oi}>
+                <input type="radio" name={`correct-${qi}`} checked={q.correct === oi} onChange={() => patch(qi, (x) => ({ ...x, correct: oi }))} />
+                <input className="input" value={opt} onChange={(e) => patch(qi, (x) => ({ ...x, options: x.options.map((o, k) => (k === oi ? e.target.value : o)) }))} dir="auto" placeholder={`תשובה ${oi + 1}`} />
+              </label>
+            ))}
+          </div>
+        ))}
+        <button className="btn ghost" style={{ minHeight: 42, padding: 10 }} onClick={addQ}>+ שאלה</button>
+      </div>
+    );
+  },
+};
+
 const EDITORS = {
   bingo: bingoEditor,
   counter: counterEditor,
   poll: pollEditor,
+  trivia: triviaEditor,
 };
