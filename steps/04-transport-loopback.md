@@ -1,6 +1,6 @@
 # Step 04 — `Transport` interface + `LoopbackTransport` (same-device) + Host/Join seam
 
-**Phase:** Core (the seam) · **Status:** todo · **Depends on:** 03
+**Phase:** Core (the seam) · **Status:** done · **Depends on:** 03
 
 ## Goal
 The transport abstraction that makes the same-device fallback bulletproof and live P2P a clean
