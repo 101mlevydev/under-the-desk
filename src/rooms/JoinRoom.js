@@ -7,6 +7,7 @@ import { removeFrom } from '../transport/Transport.js';
 export class JoinRoom {
   constructor(transport, { name = 'אנונימי', color = 'var(--poll)' } = {}) {
     this.t = transport;
+    this.id = transport.id || null;
     this.name = name;
     this.color = color;
     this.isHost = false;

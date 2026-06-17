@@ -1,6 +1,6 @@
 # Step 06 — Bingo (same-device, signature) — card + mark + verified "בינגו!"
 
-**Phase:** Core games · **Status:** todo · **Depends on:** 05
+**Phase:** Core games · **Status:** done · **Depends on:** 05
 
 ## Goal
 The **signature** game, fully playable same-device. This is the identity of the app — make it feel

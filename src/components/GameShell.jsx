@@ -19,17 +19,10 @@ export default function GameShell() {
   const link = ctrl.link;
 
   useEffect(() => {
-    if (startedRef.current) return;
-    startedRef.current = true;
-    const config = state.config[gameId] || (entry.defaultConfig || {});
-    ctrl.startGame(gameId, config, entry.createHostLogic);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     const off = ctrl.onRoster(setPlayers);
     const offMsg = link.onMessage((msg) => {
       if (msg.t === 'end') {
+        ctrl.stopBots();
         set({
           results: {
             game: gameId,
@@ -42,15 +35,30 @@ export default function GameShell() {
         navigate('results');
       }
     });
+
+    if (!startedRef.current) {
+      startedRef.current = true;
+      const config = state.config[gameId] || entry.defaultConfig || {};
+      // same-device: seat companions + start their bots (subscribe) BEFORE the host broadcast.
+      if (state.mode === 'loopback') {
+        ctrl.seedDemoSeats();
+        ctrl.startBots(entry.createBot, config);
+      }
+      ctrl.startGame(gameId, config, entry.createHostLogic);
+    }
+
     return () => {
       off();
       offMsg();
+      ctrl.stopBots();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const GameComponent = entry.Component;
   const config = state.config[gameId] || entry.defaultConfig || {};
+  // The device is the host for now; its player id/name must match HostRoom's host identity.
+  const me = { ...state.me, id: 'host', name: state.me.name || 'מנחה' };
 
   return (
     <div data-accent={gameId} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
@@ -58,7 +66,7 @@ export default function GameShell() {
         <GameComponent
           link={link}
           isHost={true}
-          me={state.me}
+          me={me}
           players={players}
           config={config}
           controller={ctrl}

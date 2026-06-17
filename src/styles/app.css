@@ -310,6 +310,21 @@ input { font-family: inherit; }
 }
 @keyframes claim-glow { to { box-shadow: 0 0 22px rgba(var(--accent-rgb), 0.35); } }
 
+/* bingo win overlay */
+.win-overlay {
+  position: absolute; inset: 0; z-index: 30;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(7, 8, 16, 0.72); backdrop-filter: blur(3px);
+  animation: toast-in 0.3s var(--ease);
+}
+.win-card {
+  text-align: center; padding: 22px 30px; border-radius: var(--r);
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid rgba(var(--accent-rgb), 0.5);
+  box-shadow: 0 0 50px rgba(var(--accent-rgb), 0.4);
+  animation: cellpop 0.45s var(--ease);
+}
+
 /* ===== REACTION ===== */
 .reaction-stage {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;

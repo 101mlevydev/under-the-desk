@@ -62,3 +62,23 @@ export const gameRegistry = { ...GAME_META };
 export function registerGame(id, impl) {
   gameRegistry[id] = { ...gameRegistry[id], ...impl };
 }
+
+/* ---- game implementations (each registers component + host logic + optional bot) ---- */
+import Bingo from './bingo/Bingo.jsx';
+import { createBingoHostLogic } from './bingo/hostLogic.js';
+import { createBingoBot } from './bingo/bot.js';
+
+// Temporary "כל מרצה" buzzword list (placeholder copy — final pack + native review at Step 18).
+export const TEMP_BINGO_WORDS = [
+  'בעצם', 'שאלה טובה', 'טריוויאלי', 'אז…', 'נמשיך', 'ברור', 'המקרן נתקע', '"זוכרים?"',
+  'תרגיל לבית', 'בגדול', 'סליחה', 'שנייה', 'נחזור לזה', 'אינטואיטיבי', '"כמובן"', 'יבש',
+  'מובן מאליו', 'נגזרת', 'בקיצור', 'לכן', 'מצוין', 'חורג מהזמן', 'בהמשך', 'סוף סוף',
+  'נשאיר כתרגיל', 'אינטגרל', 'בלי הוכחה', 'מי שאל?',
+];
+
+registerGame('bingo', {
+  Component: Bingo,
+  createHostLogic: createBingoHostLogic,
+  createBot: createBingoBot,
+  defaultConfig: { words: TEMP_BINGO_WORDS },
+});

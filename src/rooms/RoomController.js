@@ -23,6 +23,31 @@ export class RoomController {
     });
     this.link = this.host.selfLink();
     this.seats = []; // virtual JoinRooms (same-device extra players)
+    this._seeded = false;
+    this._botStops = [];
+  }
+
+  /* Seed a small table of same-device companions so games feel multiplayer on one phone. */
+  seedDemoSeats() {
+    if (this._seeded || this.mode !== 'loopback') return;
+    this._seeded = true;
+    const table = [
+      { name: 'דנה', color: 'var(--poll)' },
+      { name: 'עידו', color: 'var(--counter)' },
+      { name: 'נועה', color: 'var(--trivia)' },
+    ];
+    table.forEach((s) => this.addSeat(s));
+  }
+
+  startBots(createBot, config) {
+    this.stopBots();
+    if (!createBot) return;
+    this._botStops = this.seats.map((s) => createBot(s, config)).filter(Boolean);
+  }
+
+  stopBots() {
+    this._botStops.forEach((f) => f && f());
+    this._botStops = [];
   }
 
   /* Add a same-device seat (a virtual player on this one device). Returns its JoinRoom so a
@@ -59,6 +84,7 @@ export class RoomController {
   }
 
   destroy() {
+    this.stopBots();
     this.clearSeats();
     this.host.destroy();
   }
