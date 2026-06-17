@@ -47,10 +47,12 @@ export default function GameShell() {
       ctrl.startGame(gameId, config, entry.createHostLogic);
     }
 
+    // NOTE: do not stop bots here. Effect cleanup also runs under StrictMode's double-invoke,
+    // which would kill the bots while startedRef blocks the restart. Bots are stopped on 'end'
+    // and on controller.destroy()/resetSession.
     return () => {
       off();
       offMsg();
-      ctrl.stopBots();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

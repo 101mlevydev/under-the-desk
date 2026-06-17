@@ -1,6 +1,6 @@
 # Step 07 — Reaction Race (same-device, demo-safe) — arm → go → ranked tap
 
-**Phase:** Core games · **Status:** todo · **Depends on:** 05
+**Phase:** Core games · **Status:** done · **Depends on:** 05
 
 ## Goal
 The **demo-safe** game: zero content to type, connects and plays in seconds. The guaranteed "it

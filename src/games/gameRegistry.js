@@ -82,3 +82,14 @@ registerGame('bingo', {
   createBot: createBingoBot,
   defaultConfig: { words: TEMP_BINGO_WORDS },
 });
+
+import Reaction from './reaction/Reaction.jsx';
+import { createReactionHostLogic } from './reaction/hostLogic.js';
+import { createReactionBot } from './reaction/bot.js';
+
+registerGame('reaction', {
+  Component: Reaction,
+  createHostLogic: createReactionHostLogic,
+  createBot: createReactionBot,
+  defaultConfig: { rounds: 3 },
+});
