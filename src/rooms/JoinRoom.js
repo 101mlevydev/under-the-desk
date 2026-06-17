@@ -13,6 +13,7 @@ export class JoinRoom {
     this.isHost = false;
     this._cbs = [];
     this._unsub = transport.onMessage((msg) => {
+      if (msg && msg.to && msg.to !== this.id) return; // targeted to another peer
       for (const cb of this._cbs.slice()) cb(msg);
     });
   }

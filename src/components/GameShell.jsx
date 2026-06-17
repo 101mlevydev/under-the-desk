@@ -28,6 +28,17 @@ export default function GameShell() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Joiner: pull the current game state on mount, in case we mounted a beat after the
+  // host's initial broadcast and missed it. The host replies targeted (to us only), so
+  // this can never reset another player's board.
+  useEffect(() => {
+    if (!ctrl || state.role !== 'join') return;
+    ctrl.link.send({ t: 'sync' });
+    const id = setTimeout(() => ctrl.link.send({ t: 'sync' }), 600);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (!ctrl || !meta) {
     return <div className="reaction-stage idle"><div className="hint">טוען…</div></div>;
   }

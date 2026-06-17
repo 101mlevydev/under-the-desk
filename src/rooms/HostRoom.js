@@ -43,6 +43,13 @@ export class HostRoom {
       case 'leave':
         if (this.players.delete(fromId)) this._broadcastRoster();
         break;
+      case 'sync':
+        // a (re)joiner asks for the current game state — reply TARGETED to them only
+        if (this.gameId) {
+          this.broadcast({ t: 'start', game: this.gameId, config: this.config, to: fromId });
+          if (this.logic && this.logic.snapshot) this.broadcast({ ...this.logic.snapshot(), to: fromId });
+        }
+        break;
       default:
         if (this.logic && this.logic.onInput) this.logic.onInput(fromId, msg);
     }
@@ -65,8 +72,10 @@ export class HostRoom {
 
   // ---- outbound ----
   broadcast(msg) {
-    this.t.send(msg); // → joiners
-    for (const cb of this._localCbs.slice()) cb(msg); // → host self-player
+    this.t.send(msg); // → joiners (each JoinRoom filters by msg.to)
+    if (!msg.to || msg.to === this.hostId) {
+      for (const cb of this._localCbs.slice()) cb(msg); // → host self-player
+    }
   }
 
   _broadcastRoster() {
