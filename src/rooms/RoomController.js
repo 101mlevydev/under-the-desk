@@ -1,57 +1,76 @@
 import { createLoopbackHub } from '../transport/LoopbackTransport.js';
+import { PeerJSHostTransport, PeerJSJoinerTransport } from '../transport/PeerJSTransport.js';
+import { generateCode } from '../transport/roomCode.js';
 import { HostRoom } from './HostRoom.js';
 import { JoinRoom } from './JoinRoom.js';
 
-/* RoomController — owns the transport + room for a session and exposes a uniform surface to
-   React. In same-device (loopback) mode it can also seed virtual "seats" (other players on the
-   one device) so games feel alive. PeerJS host/join is wired in Steps 08–09 by swapping the
-   transport here; nothing else changes. */
-
+/* RoomController — owns the transport + room for one session and exposes a uniform surface to
+   React, regardless of role/mode:
+     - host + loopback : same-device (the floor); seeds companion seats + bots
+     - host + peerjs   : opens a 6-char room over the broker; real joiners connect
+     - join + peerjs   : connects to a host by code
+   `link` is always a PlayerLink ({ send, onMessage }) the games consume identically. */
 export class RoomController {
-  constructor({ mode = 'loopback', me, roomCode = null } = {}) {
+  constructor({ mode = 'loopback', role = 'host', me, roomCode = null, onStatus = () => {} } = {}) {
     this.mode = mode;
+    this.role = role;
     this.me = me || { id: 'host', name: 'מנחה', color: 'var(--bingo)' };
     this.roomCode = roomCode;
-    this.role = 'host';
-
-    // Loopback host (peerjs swaps the transport in Step 08).
-    this.hub = createLoopbackHub();
-    this.host = new HostRoom(this.hub._host, {
-      hostId: 'host',
-      hostName: this.me.name || 'מנחה',
-      color: this.me.color,
-    });
-    this.link = this.host.selfLink();
-    this.seats = []; // virtual JoinRooms (same-device extra players)
+    this.status = mode === 'loopback' ? 'connected' : 'idle';
+    this._onStatus = onStatus;
+    this.seats = [];
     this._seeded = false;
     this._botStops = [];
+
+    if (role === 'host') {
+      if (mode === 'peerjs') {
+        this.transport = new PeerJSHostTransport(roomCode || generateCode(), {
+          onStatus: (s, r) => this._status(s, r),
+          onCodeChange: (c) => { this.roomCode = c; },
+        });
+      } else {
+        this.hub = createLoopbackHub();
+        this.transport = this.hub._host;
+      }
+      this.host = new HostRoom(this.transport, {
+        hostId: 'host',
+        hostName: this.me.name || 'מנחה',
+        color: this.me.color,
+      });
+      this.link = this.host.selfLink();
+    } else {
+      this.transport = new PeerJSJoinerTransport(roomCode, {
+        onStatus: (s, r) => this._status(s, r),
+      });
+      this.joinRoom = new JoinRoom(this.transport, { name: this.me.name, color: this.me.color });
+      this.link = this.joinRoom;
+    }
   }
 
-  /* Seed a small table of same-device companions so games feel multiplayer on one phone. */
+  _status(status, reason) {
+    this.status = status;
+    if (this.role === 'join' && status === 'connected') {
+      // announce ourselves to the host once the data channel is open
+      this.joinRoom.join();
+    }
+    this._onStatus(status, reason);
+  }
+
+  getInitialRoster() {
+    return this.host ? this.host.getRoster() : [];
+  }
+
+  // ---- same-device companions (loopback only) ----
   seedDemoSeats() {
-    if (this._seeded || this.mode !== 'loopback') return;
+    if (this._seeded || this.mode !== 'loopback' || !this.hub) return;
     this._seeded = true;
-    const table = [
+    [
       { name: 'דנה', color: 'var(--poll)' },
       { name: 'עידו', color: 'var(--counter)' },
       { name: 'נועה', color: 'var(--trivia)' },
-    ];
-    table.forEach((s) => this.addSeat(s));
+    ].forEach((s) => this.addSeat(s));
   }
 
-  startBots(createBot, config) {
-    this.stopBots();
-    if (!createBot) return;
-    this._botStops = this.seats.map((s) => createBot(s, config)).filter(Boolean);
-  }
-
-  stopBots() {
-    this._botStops.forEach((f) => f && f());
-    this._botStops = [];
-  }
-
-  /* Add a same-device seat (a virtual player on this one device). Returns its JoinRoom so a
-     game's host logic can drive it (e.g. a bot tap) through the real Transport path. */
   addSeat({ id, name, color }) {
     const t = this.hub.addJoiner({ id, name });
     const jr = new JoinRoom(t, { name, color });
@@ -60,32 +79,30 @@ export class RoomController {
     return jr;
   }
 
-  clearSeats() {
-    this.seats.forEach((s) => s.destroy());
-    this.seats = [];
+  startBots(createBot, config) {
+    this.stopBots();
+    if (!createBot || this.mode !== 'loopback') return;
+    this._botStops = this.seats.map((s) => createBot(s, config)).filter(Boolean);
   }
 
+  stopBots() {
+    this._botStops.forEach((f) => f && f());
+    this._botStops = [];
+  }
+
+  // ---- game lifecycle (host only) ----
   startGame(gameId, config, hostLogicFactory) {
-    this.host.startGame(gameId, config, hostLogicFactory);
+    if (this.host) this.host.startGame(gameId, config, hostLogicFactory);
   }
-
   endGame(results) {
-    this.host.endGame(results);
-  }
-
-  getRoster() {
-    return this.host.getRoster();
-  }
-  onRoster(cb) {
-    return this.host.onRoster(cb);
-  }
-  onPeerLeft(cb) {
-    return this.host.onPeerLeft(cb);
+    if (this.host) this.host.endGame(results);
   }
 
   destroy() {
     this.stopBots();
-    this.clearSeats();
-    this.host.destroy();
+    this.seats.forEach((s) => s.destroy());
+    this.seats = [];
+    if (this.host) this.host.destroy();
+    else if (this.transport && this.transport.destroy) this.transport.destroy();
   }
 }

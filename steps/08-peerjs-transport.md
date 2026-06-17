@@ -1,6 +1,6 @@
 # Step 08 — `PeerJSTransport` + `roomCode` (6-char) + ConnectionStatus state machine
 
-**Phase:** Networking (critical path) · **Status:** todo · **Depends on:** 04
+**Phase:** Networking (critical path) · **Status:** done · **Depends on:** 04
 
 ## Goal
 The Kahoot-style live transport over the **PeerJS public broker** — the highest-risk block. Same

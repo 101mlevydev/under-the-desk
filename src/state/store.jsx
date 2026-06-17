@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useCallback, useRef } from 'react';
 import { RoomController } from '../rooms/RoomController.js';
+import { GAME_META } from '../games/gameRegistry.js';
 
 /* Central app store: navigation + room/session state.
    Transport/room wiring (host/join controller) is attached in Step 04/08;
@@ -67,8 +68,42 @@ export function StoreProvider({ children }) {
     toastTimer.current = setTimeout(() => dispatch({ type: 'TOAST', toast: null }), 2200);
   }, []);
 
-  // Lazily create the host session controller (loopback now; PeerJS swaps in at Step 08).
-  // Construct-only: subscriptions are wired by screens inside effects (never during render).
+  // Centralized session listener: roster, game start/end, navigation. Subscribing does not
+  // dispatch synchronously; the one-time initial roster is deferred to a microtask so this is
+  // safe even when first reached during render. Guarded so a controller is wired once.
+  const wireSession = useCallback((ctrl) => {
+    if (!ctrl || ctrl._wired) return;
+    ctrl._wired = true;
+    ctrl.link.onMessage((msg) => {
+      if (msg.t === 'roster') {
+        dispatch({ type: 'SET_ROSTER', roster: msg.players });
+      } else if (msg.t === 'start') {
+        dispatch({
+          type: 'SET',
+          patch: {
+            selectedGame: msg.game,
+            config: { ...stateRef.current.config, [msg.game]: msg.config },
+          },
+        });
+        if (stateRef.current.role === 'join') dispatch({ type: 'NAV', screen: 'game' });
+      } else if (msg.t === 'end') {
+        if (ctrl.stopBots) ctrl.stopBots();
+        const gid = stateRef.current.selectedGame;
+        const meta = GAME_META[gid] || {};
+        dispatch({
+          type: 'SET',
+          patch: { results: { game: gid, accent: gid, title: meta.title, icon: meta.icon, ...msg.results } },
+        });
+        dispatch({ type: 'NAV', screen: 'results' });
+      }
+    });
+    queueMicrotask(() => {
+      const init = ctrl.getInitialRoster ? ctrl.getInitialRoster() : [];
+      if (init.length) dispatch({ type: 'SET_ROSTER', roster: init });
+    });
+  }, []);
+
+  // Lazily create the HOST session controller (loopback = same-device, peerjs = open a room).
   const ensureHost = useCallback(() => {
     if (!controllerRef.current) {
       const me = {
@@ -77,12 +112,44 @@ export function StoreProvider({ children }) {
         color: stateRef.current.me.color,
       };
       controllerRef.current = new RoomController({
+        role: 'host',
         mode: stateRef.current.mode || 'loopback',
         me,
         roomCode: stateRef.current.roomCode,
+        onStatus: (status) => dispatch({ type: 'SET', patch: { connection: status, roomCode: controllerRef.current ? controllerRef.current.roomCode : null } }),
       });
     }
+    wireSession(controllerRef.current);
     return controllerRef.current;
+  }, [wireSession]);
+
+  // Create a JOINER controller and connect to a host by code.
+  const joinAsPlayer = useCallback((code) => {
+    if (controllerRef.current && controllerRef.current.destroy) controllerRef.current.destroy();
+    const me = {
+      id: null,
+      name: stateRef.current.me.name || 'אורח/ת',
+      color: stateRef.current.me.color,
+    };
+    const ctrl = new RoomController({
+      role: 'join',
+      mode: 'peerjs',
+      me,
+      roomCode: code,
+      onStatus: (status) => dispatch({ type: 'SET', patch: { connection: status } }),
+    });
+    controllerRef.current = ctrl;
+    wireSession(ctrl);
+    dispatch({ type: 'SET', patch: { role: 'join', mode: 'peerjs', roomCode: code, connection: 'connecting' } });
+    dispatch({ type: 'NAV', screen: 'lobby' });
+  }, [wireSession]);
+
+  // Drop the network session and fall back to same-device — never a dead-end.
+  const fallbackToSoloMode = useCallback(() => {
+    if (controllerRef.current && controllerRef.current.destroy) controllerRef.current.destroy();
+    controllerRef.current = null;
+    dispatch({ type: 'SET', patch: { role: 'host', mode: 'loopback', connection: 'connected', roomCode: null, roster: [] } });
+    dispatch({ type: 'NAV', screen: stateRef.current.selectedGame ? 'game' : 'pick' });
   }, []);
 
   const resetSession = useCallback(() => {
@@ -102,6 +169,8 @@ export function StoreProvider({ children }) {
     toast,
     resetSession,
     ensureHost,
+    joinAsPlayer,
+    fallbackToSoloMode,
     controllerRef,
     AVATAR_COLORS,
   };
