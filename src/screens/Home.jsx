@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useStore } from '../state/store.jsx';
 import { normalizeCode, isValidCode, parseRoomParam } from '../transport/roomCode.js';
+import { saveMe } from '../lib/persistence.js';
 
 export default function Home() {
   const { state, set, navigate, toast, joinAsPlayer } = useStore();
@@ -20,7 +21,9 @@ export default function Home() {
 
   function rememberName() {
     const n = name.trim();
-    set({ me: { ...state.me, name: n } });
+    const me = { ...state.me, name: n };
+    set({ me });
+    saveMe(me);
     return n;
   }
 

@@ -1,19 +1,19 @@
 import React from 'react';
 import { useStore } from '../state/store.jsx';
+import ContentEditor from '../components/ContentEditor.jsx';
+import { saveLastConfig } from '../lib/persistence.js';
 
-// Stub — content authoring + starter packs land in Step 10.
 export default function Customize() {
-  const { state, navigate, controllerRef } = useStore();
+  const { state, set, navigate, controllerRef } = useStore();
+  const gameId = state.selectedGame;
   const roomOpen = !!controllerRef.current;
   const next = state.mode === 'peerjs' && !roomOpen ? 'invite' : 'game';
-  return (
-    <>
-      <div className="top"><span className="stealth"><span className="dot" />התאמה אישית</span></div>
-      <h2 className="h-screen">תוכן המשחק</h2>
-      <p className="sub-screen">בקרוב — עריכת תוכן וחבילות מוכנות.</p>
-      <div className="spacer" />
-      <button className="btn primary" onClick={() => navigate(next)}>המשך</button>
-      <button className="btn dim" onClick={() => navigate('pick')}>חזרה</button>
-    </>
-  );
+
+  function onContinue(config) {
+    saveLastConfig(gameId, config);
+    set({ config: { ...state.config, [gameId]: config } });
+    navigate(next);
+  }
+
+  return <ContentEditor gameId={gameId} onContinue={onContinue} onBack={() => navigate('pick')} />;
 }

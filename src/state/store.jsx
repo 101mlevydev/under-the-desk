@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, useCallback, useRef } from 'react';
 import { RoomController } from '../rooms/RoomController.js';
 import { GAME_META } from '../games/gameRegistry.js';
+import { loadMe } from '../lib/persistence.js';
 
 /* Central app store: navigation + room/session state.
    Transport/room wiring (host/join controller) is attached in Step 04/08;
@@ -52,7 +53,10 @@ function reducer(state, action) {
 const StoreCtx = createContext(null);
 
 export function StoreProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialState, (init) => {
+    const saved = loadMe();
+    return saved ? { ...init, me: { ...init.me, ...saved } } : init;
+  });
   const toastTimer = useRef(null);
   const controllerRef = useRef(null); // RoomController for the active session
   const stateRef = useRef(state);
