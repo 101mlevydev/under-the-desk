@@ -104,3 +104,14 @@ registerGame('counter', {
   createBot: createCounterBot,
   defaultConfig: { phrase: 'בעצם' },
 });
+
+import Poll from './poll/Poll.jsx';
+import { createPollHostLogic } from './poll/hostLogic.js';
+import { createPollBot } from './poll/bot.js';
+
+registerGame('poll', {
+  Component: Poll,
+  createHostLogic: createPollHostLogic,
+  createBot: createPollBot,
+  defaultConfig: { question: 'מה יותר חשוב לפני בוחן?', options: ['קפה', 'שינה', 'שניהם', 'אף אחד — פאניקה'] },
+});

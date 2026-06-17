@@ -170,7 +170,45 @@ const counterEditor = {
   },
 };
 
+const pollEditor = {
+  defaultPackName: 'הסקר שלי',
+  empty: () => ({ question: '', options: ['', ''] }),
+  fromPack: (p) => ({ question: p.question || '', options: (p.options && p.options.length ? p.options : ['', '']).slice() }),
+  fromConfig: (c) => ({ question: c.question || '', options: (c.options && c.options.length ? c.options : ['', '']).slice() }),
+  toPack: (c) => ({ question: c.question.trim(), options: c.options.map((o) => o.trim()).filter(Boolean) }),
+  toConfig: (c) => ({ question: c.question.trim(), options: c.options.map((o) => o.trim()).filter(Boolean) }),
+  valid: (c) => c.question.trim().length > 0 && c.options.map((o) => o.trim()).filter(Boolean).length >= 2,
+  Body: function PollBody({ config, setConfig }) {
+    function setOpt(i, v) {
+      const options = config.options.slice();
+      options[i] = v;
+      setConfig({ ...config, options });
+    }
+    function addOpt() { if (config.options.length < 8) setConfig({ ...config, options: [...config.options, ''] }); }
+    function removeOpt(i) { if (config.options.length > 2) setConfig({ ...config, options: config.options.filter((_, k) => k !== i) }); }
+    return (
+      <>
+        <div className="field">
+          <label>השאלה</label>
+          <input className="input" value={config.question} onChange={(e) => setConfig({ ...config, question: e.target.value })} dir="auto" placeholder="מה יותר חשוב לפני בוחן?" />
+        </div>
+        <div className="field">
+          <label>אפשרויות (2–8)</label>
+          {config.options.map((opt, i) => (
+            <div className="opt-row" key={i}>
+              <input className="input" value={opt} onChange={(e) => setOpt(i, e.target.value)} dir="auto" placeholder={`אפשרות ${i + 1}`} />
+              {config.options.length > 2 && <button className="opt-x" onClick={() => removeOpt(i)} aria-label="הסרה">×</button>}
+            </div>
+          ))}
+          {config.options.length < 8 && <button className="btn ghost" style={{ minHeight: 42, padding: 10 }} onClick={addOpt}>+ אפשרות</button>}
+        </div>
+      </>
+    );
+  },
+};
+
 const EDITORS = {
   bingo: bingoEditor,
   counter: counterEditor,
+  poll: pollEditor,
 };
