@@ -1,16 +1,99 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useStore } from '../state/store.jsx';
+import { gameRegistry, GAME_META } from '../games/gameRegistry.js';
 
-// Stub — mounts the active game component against the room in Step 05.
+/* Mounts the active game's player component against the room link. The host additionally runs
+   the game's authoritative hostLogic inside HostRoom. Joiner wiring (live P2P) reuses the same
+   component with a JoinRoom link in Step 09 — the component never knows the difference. */
 export default function GameShell() {
-  const { navigate } = useStore();
+  const { state, set, navigate, ensureHost } = useStore();
+  const gameId = state.selectedGame;
+  const meta = GAME_META[gameId];
+  const entry = gameRegistry[gameId] || meta;
+  const startedRef = useRef(false);
+
+  const [players, setPlayers] = useState([]);
+
+  // For now the device is always the host (loopback). Live joiners arrive in Step 09.
+  const ctrl = ensureHost();
+  const link = ctrl.link;
+
+  useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    const config = state.config[gameId] || (entry.defaultConfig || {});
+    ctrl.startGame(gameId, config, entry.createHostLogic);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const off = ctrl.onRoster(setPlayers);
+    const offMsg = link.onMessage((msg) => {
+      if (msg.t === 'end') {
+        set({
+          results: {
+            game: gameId,
+            accent: gameId,
+            title: meta.title,
+            icon: meta.icon,
+            ...msg.results,
+          },
+        });
+        navigate('results');
+      }
+    });
+    return () => {
+      off();
+      offMsg();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const GameComponent = entry.Component;
+  const config = state.config[gameId] || entry.defaultConfig || {};
+
+  return (
+    <div data-accent={gameId} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+      {GameComponent ? (
+        <GameComponent
+          link={link}
+          isHost={true}
+          me={state.me}
+          players={players}
+          config={config}
+          controller={ctrl}
+        />
+      ) : (
+        <StubBoard meta={meta} onEnd={() => ctrl.endGame(stubResults(players, meta))} onBack={() => navigate('pick')} />
+      )}
+    </div>
+  );
+}
+
+function stubResults(players, meta) {
+  const scores = players.map((p, i) => ({ id: p.id, name: p.name, color: p.color, pts: 0, detail: '—' }));
+  return { banner: meta.title, sub: 'דמו', scores, winnerId: scores[0] && scores[0].id };
+}
+
+function StubBoard({ meta, onEnd, onBack }) {
   return (
     <>
-      <div className="top"><span className="stealth"><span className="dot" />משחק</span></div>
-      <h2 className="h-screen">משחק</h2>
-      <p className="sub-screen">בקרוב.</p>
-      <div className="spacer" />
-      <button className="btn primary" onClick={() => navigate('results')}>סיום</button>
+      <div className="game-top">
+        <div className="game-ico">{meta.icon}</div>
+        <div>
+          <div className="gt">{meta.title}</div>
+          <div className="gs">{meta.tagline}</div>
+        </div>
+        <div className="live">● LIVE</div>
+      </div>
+      <div className="reaction-stage idle">
+        <div className="big" style={{ fontSize: 30 }}>{meta.icon}</div>
+        <div className="hint">המשחק הזה בבנייה</div>
+      </div>
+      <div className="bingo-cta">
+        <button className="btn primary" onClick={onEnd}>סיום ←</button>
+        <button className="btn dim" onClick={onBack}>חזרה</button>
+      </div>
     </>
   );
 }

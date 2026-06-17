@@ -1,17 +1,46 @@
 import React from 'react';
 import { useStore } from '../state/store.jsx';
+import Scoreboard from '../components/Scoreboard.jsx';
 
-// Stub — scoreboard + winner land in Step 05.
+const CONFETTI = ['🎉', '✨', '🎊', '⭐', '🟩'];
+
 export default function Results() {
-  const { navigate } = useStore();
+  const { state, navigate, resetSession } = useStore();
+  const r = state.results || { banner: 'סיבוב הסתיים', scores: [] };
+  const winner = (r.scores || []).find((s) => s.id === r.winnerId) || (r.scores || [])[0];
+
+  function anotherRound() {
+    // back to pick a game in the same room/session
+    navigate(state.mode === 'peerjs' ? 'lobby' : 'pick');
+  }
+  function home() {
+    resetSession();
+    navigate('home');
+  }
+
   return (
-    <>
-      <div className="res-top">
-        <div className="res-banner">סיבוב הסתיים</div>
+    <div data-accent={r.accent || 'bingo'} style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative' }}>
+      <div className="confetti" aria-hidden>
+        {CONFETTI.map((c, i) => (
+          <span key={i} style={{ insetInlineStart: `${12 + i * 19}%`, animationDelay: `${i * 0.45}s` }}>{c}</span>
+        ))}
       </div>
+
+      <div className="res-top">
+        <div className="res-banner">{r.banner || 'סיום'}</div>
+        {r.sub && <div className="res-sub">{r.sub}</div>}
+      </div>
+
+      <div className="winner"><div className="crown">👑</div></div>
+      {winner && <div className="res-sub" style={{ textAlign: 'center' }}>{winner.name}</div>}
+
+      <Scoreboard scores={r.scores || []} winnerId={r.winnerId} />
+
       <div className="spacer" />
-      <button className="btn primary" onClick={() => navigate('lobby')}>סיבוב נוסף ↻</button>
-      <button className="btn dim" onClick={() => navigate('home')}>חזרה הביתה</button>
-    </>
+      <div className="stack">
+        <button className="btn primary" onClick={anotherRound}>סיבוב נוסף ↻</button>
+        <button className="btn dim" onClick={home}>חזרה הביתה · <u>בחרו משחק אחר</u></button>
+      </div>
+    </div>
   );
 }

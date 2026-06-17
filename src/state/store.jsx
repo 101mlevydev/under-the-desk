@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback, useRef } from 'react';
+import { RoomController } from '../rooms/RoomController.js';
 
 /* Central app store: navigation + room/session state.
    Transport/room wiring (host/join controller) is attached in Step 04/08;
@@ -52,7 +53,9 @@ const StoreCtx = createContext(null);
 export function StoreProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const toastTimer = useRef(null);
-  const controllerRef = useRef(null); // HostRoom | JoinRoom (attached in later steps)
+  const controllerRef = useRef(null); // RoomController for the active session
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   const navigate = useCallback((screen) => dispatch({ type: 'NAV', screen }), []);
   const set = useCallback((patch) => dispatch({ type: 'SET', patch }), []);
@@ -62,6 +65,24 @@ export function StoreProvider({ children }) {
     dispatch({ type: 'TOAST', toast: msg });
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => dispatch({ type: 'TOAST', toast: null }), 2200);
+  }, []);
+
+  // Lazily create the host session controller (loopback now; PeerJS swaps in at Step 08).
+  // Construct-only: subscriptions are wired by screens inside effects (never during render).
+  const ensureHost = useCallback(() => {
+    if (!controllerRef.current) {
+      const me = {
+        id: 'host',
+        name: stateRef.current.me.name || 'מנחה',
+        color: stateRef.current.me.color,
+      };
+      controllerRef.current = new RoomController({
+        mode: stateRef.current.mode || 'loopback',
+        me,
+        roomCode: stateRef.current.roomCode,
+      });
+    }
+    return controllerRef.current;
   }, []);
 
   const resetSession = useCallback(() => {
@@ -80,6 +101,7 @@ export function StoreProvider({ children }) {
     setRoster,
     toast,
     resetSession,
+    ensureHost,
     controllerRef,
     AVATAR_COLORS,
   };

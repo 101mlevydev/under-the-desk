@@ -1,6 +1,6 @@
 # Step 05 — `gameRegistry` + game shell + Scoreboard / Results
 
-**Phase:** Core (plug-in seam) · **Status:** todo · **Depends on:** 04
+**Phase:** Core (plug-in seam) · **Status:** done · **Depends on:** 04
 
 ## Goal
 The plug-in seam so adding a game = adding a folder + a registry entry; the room/transport/lobby
