@@ -18,10 +18,10 @@ export function createPredictionsHostLogic(config, ctx) {
 
   return {
     start() {
-      ctx.broadcast({ t: 'prompts', items, phase, actual });
+      ctx.broadcast({ t: 'prompts', items, phase, actual: actual.slice() });
     },
     snapshot() {
-      return { t: 'prompts', items, phase, actual };
+      return { t: 'prompts', items, phase, actual: actual.slice() };
     },
     onInput(fromId, msg) {
       if (msg.t === 'predict') {
@@ -42,7 +42,7 @@ export function createPredictionsHostLogic(config, ctx) {
         const opt = msg.option | 0;
         if (i < 0 || i >= items.length || opt < 0 || opt >= items[i].options.length) return;
         actual[i] = opt;
-        ctx.broadcast({ t: 'outcomes', actual });
+        ctx.broadcast({ t: 'outcomes', actual: actual.slice() });
       } else if (msg.t === 'finish') {
         finish();
       }
