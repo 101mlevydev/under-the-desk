@@ -93,3 +93,14 @@ registerGame('reaction', {
   createBot: createReactionBot,
   defaultConfig: { rounds: 3 },
 });
+
+import Counter from './counter/Counter.jsx';
+import { createCounterHostLogic } from './counter/hostLogic.js';
+import { createCounterBot } from './counter/bot.js';
+
+registerGame('counter', {
+  Component: Counter,
+  createHostLogic: createCounterHostLogic,
+  createBot: createCounterBot,
+  defaultConfig: { phrase: 'בעצם' },
+});
