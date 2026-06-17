@@ -3,6 +3,8 @@ import QrCode from './QrCode.jsx';
 import { useStore } from '../state/store.jsx';
 import { buildJoinLink } from '../transport/roomCode.js';
 
+const shareWhatsApp = (msg, url) => window.open('https://wa.me/?text=' + encodeURIComponent(msg + ' ' + url), '_blank');
+
 /* Kahoot-style invite: big tap-to-copy code + shareable link + QR + live "מי הצטרף" roster
    that pops on each join. */
 export default function InvitePanel({ code, roster }) {
@@ -34,6 +36,15 @@ export default function InvitePanel({ code, roster }) {
         <div className="cap">קוד חדר — תנו לחברים להקליד</div>
         <div className="code">{code || '••••••'}</div>
         <div className="copy">הקש להעתקה · 📋</div>
+      </button>
+
+      <button
+        className="btn primary"
+        style={{ marginTop: 10 }}
+        onClick={() => shareWhatsApp('בוא נשחק בהרצאה של היום 😏 הצטרף לחדר:', link)}
+        disabled={!code}
+      >
+        📤 שלח בוואטסאפ
       </button>
 
       <div className="qrwrap">

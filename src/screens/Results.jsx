@@ -4,6 +4,10 @@ import Scoreboard from '../components/Scoreboard.jsx';
 
 const CONFETTI = ['🎉', '✨', '🎊', '⭐', '🟩'];
 
+const SHARE_URL_OVERRIDE = '';
+const shareUrl = (extra = '') => (SHARE_URL_OVERRIDE || (location.origin + location.pathname)) + extra;
+const shareWhatsApp = (msg, url) => window.open('https://wa.me/?text=' + encodeURIComponent(msg + ' ' + url), '_blank');
+
 export default function Results() {
   const { state, navigate, resetSession } = useStore();
   const r = state.results || { banner: 'סיבוב הסתיים', scores: [] };
@@ -38,6 +42,12 @@ export default function Results() {
 
       <div className="spacer" />
       <div className="stack">
+        <button
+          className="btn dim"
+          onClick={() => shareWhatsApp('שיחקנו עכשיו מתחת לשולחן 😏 בואו לשחק גם:', shareUrl())}
+        >
+          📤 שתף
+        </button>
         <button className="btn primary" onClick={anotherRound}>סיבוב נוסף ↻</button>
         <button className="btn dim" onClick={home}>חזרה הביתה · <u>בחרו משחק אחר</u></button>
       </div>
