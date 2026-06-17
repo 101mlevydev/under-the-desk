@@ -124,11 +124,11 @@ export function StoreProvider({ children }) {
   }, [wireSession]);
 
   // Create a JOINER controller and connect to a host by code.
-  const joinAsPlayer = useCallback((code) => {
+  const joinAsPlayer = useCallback((code, name) => {
     if (controllerRef.current && controllerRef.current.destroy) controllerRef.current.destroy();
     const me = {
       id: null,
-      name: stateRef.current.me.name || 'אורח/ת',
+      name: (name || stateRef.current.me.name || '').trim() || 'אורח/ת',
       color: stateRef.current.me.color,
     };
     const ctrl = new RoomController({

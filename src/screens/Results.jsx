@@ -10,8 +10,8 @@ export default function Results() {
   const winner = (r.scores || []).find((s) => s.id === r.winnerId) || (r.scores || [])[0];
 
   function anotherRound() {
-    // back to pick a game in the same room/session
-    navigate(state.mode === 'peerjs' ? 'lobby' : 'pick');
+    // back to pick a game in the same room/session (the controller stays open)
+    navigate('pick');
   }
   function home() {
     resetSession();

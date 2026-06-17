@@ -1,6 +1,6 @@
 # Step 09 — Invite/join UX — code + link + QR + deep-link + Lobby roster
 
-**Phase:** Networking · **Status:** todo · **Depends on:** 08
+**Phase:** Networking · **Status:** done · **Depends on:** 08
 
 ## Goal
 The Kahoot-style invite + join + gather experience — fast first, with one small delight.

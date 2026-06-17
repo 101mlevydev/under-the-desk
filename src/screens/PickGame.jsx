@@ -3,17 +3,18 @@ import { useStore } from '../state/store.jsx';
 import { GAME_META, GAME_ORDER } from '../games/gameRegistry.js';
 
 export default function PickGame() {
-  const { state, set, navigate } = useStore();
+  const { state, set, navigate, controllerRef } = useStore();
+  const roomOpen = !!controllerRef.current; // a peerjs room already gathered players
 
   function pick(id) {
     const meta = GAME_META[id];
-    set({ selectedGame: id });
+    set({ selectedGame: id, results: null });
     if (meta.needsContent) {
       navigate('customize');
-    } else if (state.mode === 'peerjs') {
-      navigate('invite');
+    } else if (state.mode === 'peerjs' && !roomOpen) {
+      navigate('invite'); // first game: gather players
     } else {
-      navigate('game');
+      navigate('game'); // same-device, or another round in an open room
     }
   }
 

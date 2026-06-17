@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useStore } from './state/store.jsx';
 import Home from './screens/Home.jsx';
 import PickGame from './screens/PickGame.jsx';
@@ -12,18 +12,7 @@ import { gameRegistry } from './games/gameRegistry.js';
 const WIDE_SCREENS = new Set(['invite', 'lobby']);
 
 export default function AppRouter() {
-  const { state, navigate, set, toast } = useStore();
-
-  // ?room=CODE deep link → jump straight to join (wired fully in Step 09).
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const room = params.get('room');
-    if (room) {
-      set({ role: 'join', mode: 'peerjs' });
-      navigate('home'); // Home reads the deep-link code into the join field
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { state } = useStore();
 
   const accent = state.selectedGame && gameRegistry[state.selectedGame]
     ? gameRegistry[state.selectedGame].id

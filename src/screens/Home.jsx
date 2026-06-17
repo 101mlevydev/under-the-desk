@@ -1,38 +1,49 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useStore } from '../state/store.jsx';
+import { normalizeCode, isValidCode, parseRoomParam } from '../transport/roomCode.js';
 
 export default function Home() {
-  const { state, set, navigate, toast } = useStore();
+  const { state, set, navigate, toast, joinAsPlayer } = useStore();
   const [code, setCode] = useState('');
+  const [name, setName] = useState(state.me.name || '');
   const inputRef = useRef(null);
+  const clock = useClock();
 
   // pick up a ?room=CODE deep link into the join field
   useEffect(() => {
-    const room = new URLSearchParams(window.location.search).get('room');
-    if (room) setCode(room.toUpperCase().slice(0, 6));
+    const room = parseRoomParam();
+    if (room) {
+      setCode(normalizeCode(room));
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
   }, []);
 
-  const clock = useClock();
+  function rememberName() {
+    const n = name.trim();
+    set({ me: { ...state.me, name: n } });
+    return n;
+  }
 
   function createRoom() {
-    set({ role: 'host', mode: 'peerjs', selectedGame: null });
+    rememberName();
+    set({ role: 'host', mode: 'peerjs', selectedGame: null, results: null });
     navigate('pick');
   }
 
   function joinRoom() {
-    const c = code.trim().toUpperCase();
-    if (c.length !== 6) {
-      toast('צריך קוד בן 6 תווים');
+    const c = normalizeCode(code);
+    if (!isValidCode(c)) {
+      toast('צריך קוד תקין בן 6 תווים');
       inputRef.current?.focus();
       return;
     }
-    set({ role: 'join', mode: 'peerjs', roomCode: c });
-    // Step 09 wires the actual connect; for now land in the join flow.
-    navigate('lobby');
+    const n = rememberName();
+    joinAsPlayer(c, n);
   }
 
   function soloMode() {
-    set({ role: 'host', mode: 'loopback', selectedGame: null });
+    rememberName();
+    set({ role: 'host', mode: 'loopback', selectedGame: null, results: null });
     navigate('pick');
   }
 
@@ -50,6 +61,14 @@ export default function Home() {
       </div>
 
       <div className="home-actions">
+        <input
+          className="input"
+          placeholder="איך לקרוא לך? (לא חובה)"
+          value={name}
+          onChange={(e) => setName(e.target.value.slice(0, 14))}
+          aria-label="השם שלך"
+          dir="auto"
+        />
         <button className="btn primary" onClick={createRoom}>צור חדר</button>
         <div className="joinrow">
           <input
@@ -57,7 +76,7 @@ export default function Home() {
             className="code-in"
             placeholder="קוד חדר"
             value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
+            onChange={(e) => setCode(normalizeCode(e.target.value))}
             onKeyDown={(e) => e.key === 'Enter' && joinRoom()}
             inputMode="text"
             autoCapitalize="characters"
