@@ -1,6 +1,6 @@
 # Step 03 — Design tokens + RTL shell + AppRouter
 
-**Phase:** Setup · **Status:** todo · **Depends on:** 02
+**Phase:** Setup · **Status:** done · **Depends on:** 02
 
 ## Goal
 The shared dark+neon design system and the screen-flow shell, matching the approved mockup.

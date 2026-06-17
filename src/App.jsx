@@ -1,12 +1,11 @@
 import React from 'react';
+import { StoreProvider } from './state/store.jsx';
+import AppRouter from './AppRouter.jsx';
 
 export default function App() {
   return (
-    <div className="splash">
-      <div className="wordmark">
-        מתחת <span className="u">לשולחן</span>
-      </div>
-      <div className="tag">משחקים קטנים. הרצאה אחת ארוכה. הם לא ישימו לב.</div>
-    </div>
+    <StoreProvider>
+      <AppRouter />
+    </StoreProvider>
   );
 }
