@@ -552,3 +552,32 @@ input { font-family: inherit; }
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ---------- suite cross-promo footer (Home) ---------- */
+.suite-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  margin-top: 26px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+.suite-label { font-weight: 600; }
+.suite-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; }
+.suite-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 11px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 12px;
+  white-space: nowrap;
+}
+a.suite-pill { transition: border-color .15s, color .15s, background .15s; }
+a.suite-pill:hover { border-color: var(--accent); color: var(--accent); }
+.suite-pill.is-inert { opacity: .5; cursor: default; }

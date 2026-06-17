@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useStore } from '../state/store.jsx';
 import { normalizeCode, isValidCode, parseRoomParam } from '../transport/roomCode.js';
 import { saveMe } from '../lib/persistence.js';
+import SuiteFooter from '../components/SuiteFooter.jsx';
 
 export default function Home() {
   const { state, set, navigate, toast, joinAsPlayer } = useStore();
@@ -95,6 +96,8 @@ export default function Home() {
           </div>
         </button>
       </div>
+
+      <SuiteFooter />
     </>
   );
 }
