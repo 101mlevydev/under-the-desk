@@ -1,12 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStore } from '../state/store.jsx';
 import Scoreboard from '../components/Scoreboard.jsx';
 import { sfx } from '../lib/audio.js';
 
 const CONFETTI = ['🎉', '✨', '🎊', '⭐', '🟩', '🎈', '💫', '🏆', '🥳', '🎉', '✨', '⭐'];
-const REDUCED = typeof window !== 'undefined' && window.matchMedia
-  ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  : false;
 
 const SHARE_URL_OVERRIDE = '';
 const shareUrl = (extra = '') => (SHARE_URL_OVERRIDE || (location.origin + location.pathname)) + extra;
@@ -16,9 +13,26 @@ export default function Results() {
   const { state, navigate, resetSession } = useStore();
   const r = state.results || { banner: 'סיבוב הסתיים', scores: [] };
   const winner = (r.scores || []).find((s) => s.id === r.winnerId) || (r.scores || [])[0];
+  const [sharePrompt, setSharePrompt] = useState(false);
 
-  // the big payoff — sound the fanfare once when the results screen lands
-  useEffect(() => { sfx('win'); }, []);
+  // the big payoff — sound the fanfare once when the results screen lands, then slide up a
+  // dismissible "spread it" share prompt a beat later (the virality nudge, never blocking).
+  useEffect(() => {
+    sfx('win');
+    const id = setTimeout(() => setSharePrompt(true), 1200);
+    return () => clearTimeout(id);
+  }, []);
+
+  // punchy, demo-ready WhatsApp copy — names the moment, not just "we played a game"
+  const shareMsg = winner
+    ? `${winner.name} ניצח/ה אצלנו ב"מתחת לשולחן" 😏 בהרצאה הכי משעממת. בואו תנצחו אתכם:`
+    : 'שיחקנו עכשיו "מתחת לשולחן" באמצע ההרצאה 😏 בואו לשחק גם:';
+
+  function doShare() {
+    sfx('lock');
+    shareWhatsApp(shareMsg, shareUrl());
+    setSharePrompt(false);
+  }
 
   function anotherRound() {
     // back to pick a game in the same room/session (the controller stays open)
@@ -60,13 +74,21 @@ export default function Results() {
       <Scoreboard scores={r.scores || []} winnerId={r.winnerId} />
 
       <div className="spacer" />
+
+      {sharePrompt && (
+        <div className="share-prompt" role="dialog" aria-label="שיתוף">
+          <button className="share-x" onClick={() => setSharePrompt(false)} aria-label="סגירה">×</button>
+          <div className="share-emoji">📣</div>
+          <div className="share-copy">
+            <b>תפיצו את זה.</b>
+            <span>שלחו לחבר/ה שתקוע/ה בהרצאה אחרת — שייכנסו לסיבוב הבא.</span>
+          </div>
+          <button className="btn primary share-go" onClick={doShare}>שלח בוואטסאפ 📤</button>
+        </div>
+      )}
+
       <div className="stack">
-        <button
-          className="btn dim"
-          onClick={() => shareWhatsApp('שיחקנו עכשיו מתחת לשולחן 😏 בואו לשחק גם:', shareUrl())}
-        >
-          📤 שתף
-        </button>
+        <button className="btn dim" onClick={doShare}>📤 שתף</button>
         <button className="btn primary" onClick={anotherRound}>סיבוב נוסף ↻</button>
         <button className="btn dim" onClick={home}>חזרה הביתה · <u>בחרו משחק אחר</u></button>
       </div>

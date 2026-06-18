@@ -7,6 +7,7 @@ const LABELS = {
   opening: { dot: 'warn', text: 'פותח חדר…' },
   waiting: { dot: 'on', text: 'מחכים לשחקנים' },
   connecting: { dot: 'warn', text: 'מתחבר…' },
+  reconnecting: { dot: 'warn', text: 'מתחבר מחדש…' },
   connected: { dot: 'on', text: 'מחובר' },
   'peer-left': { dot: 'warn', text: 'מישהו התנתק' },
   failed: { dot: 'off', text: 'הרשת חסומה' },
@@ -23,6 +24,15 @@ export function StatusPill({ status }) {
 }
 
 export default function ConnectionStatus({ status, onFallback, onRetry }) {
+  // gentle, non-blocking "reconnecting" notice — we're still trying, no need to bail yet
+  if (status === 'reconnecting') {
+    return (
+      <div className="banner-reconnect">
+        <span className="spin" aria-hidden />
+        <span><b>מתחבר מחדש…</b> רגע, מנסים לחבר אתכם שוב. אל תזוזו.</span>
+      </div>
+    );
+  }
   if (status !== 'failed') return null;
   return (
     <div className="banner-fallback">

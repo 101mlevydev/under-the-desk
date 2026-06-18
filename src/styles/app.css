@@ -561,6 +561,19 @@ input { font-family: inherit; }
   padding: 11px 13px; font-size: 12.5px; color: #ffd79a; margin-bottom: 10px; line-height: 1.5;
 }
 
+/* reconnect notice — calmer than the failure banner; we're still trying */
+.banner-reconnect {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255, 178, 62, 0.08); border: 1px solid rgba(255, 178, 62, 0.35); border-radius: 12px;
+  padding: 11px 13px; font-size: 12.5px; color: #ffd79a; margin-bottom: 10px; line-height: 1.45;
+}
+.banner-reconnect .spin {
+  width: 15px; height: 15px; flex: none; border-radius: 50%;
+  border: 2px solid rgba(255, 178, 62, 0.3); border-top-color: var(--counter);
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* ============================================================================
    RESPONSIVE — phone-first, but crafted on tablet & laptop too.
    • phone  : the base styles above (single fluid column, safe-area padded).
@@ -720,6 +733,41 @@ input { font-family: inherit; }
 @media (min-width: 900px) and (max-aspect-ratio: 1/1) {
   .proj-wrap, .proj-wrap.game { grid-template-columns: 1fr; }
   .proj-wrap.game .proj-rail.compact { flex-direction: row; align-items: center; }
+}
+
+/* ---------- results share prompt (virality nudge) ---------- */
+.share-prompt {
+  position: relative;
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+  padding: 13px 14px; border-radius: 16px;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid rgba(var(--accent-rgb), 0.45);
+  box-shadow: 0 0 28px rgba(var(--accent-rgb), 0.16);
+  animation: share-in 0.45s var(--ease) both;
+}
+@keyframes share-in {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.share-emoji {
+  width: 42px; height: 42px; flex: none; border-radius: 12px; font-size: 22px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(var(--accent-rgb), 0.13); border: 1px solid rgba(var(--accent-rgb), 0.35);
+}
+.share-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.share-copy b { font-size: 14px; }
+.share-copy span { font-size: 11.5px; color: var(--muted); line-height: 1.35; }
+.share-go { width: auto; min-width: 0; flex: none; padding: 12px 16px; font-size: 14px; min-height: 0; }
+.share-x {
+  position: absolute; inset-block-start: 6px; inset-inline-end: 8px;
+  width: 26px; height: 26px; border-radius: 50%; border: none; cursor: pointer;
+  background: transparent; color: var(--muted); font-size: 20px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.share-x:hover { color: var(--ink); }
+@media (max-width: 380px) {
+  .share-prompt { flex-wrap: wrap; }
+  .share-go { width: 100%; }
 }
 
 /* ---------- suite cross-promo footer (Home) ---------- */
