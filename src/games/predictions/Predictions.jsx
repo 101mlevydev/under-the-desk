@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { buzz } from '../../lib/haptics.js';
+import { sfx } from '../../lib/audio.js';
 
 /* Predictions player view. While guessing is open, lock a pick on each prompt. After the host
    locks, picks freeze; as the host marks each real outcome, your right guesses light up green,
@@ -26,6 +27,7 @@ export default function Predictions({ link, me, isHost }) {
       } else if (msg.t === 'outcomes') {
         setActual(msg.actual || []);
         buzz([18, 30]);
+        sfx('reveal');
       }
     });
     return off;
@@ -38,6 +40,7 @@ export default function Predictions({ link, me, isHost }) {
     if (locked) return;
     setMyPreds((p) => ({ ...p, [i]: opt }));
     buzz(14);
+    sfx('tap');
     link.send({ t: 'predict', index: i, option: opt });
   }
 

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer, useCallback, useRef } fro
 import { RoomController } from '../rooms/RoomController.js';
 import { GAME_META } from '../games/gameRegistry.js';
 import { loadMe } from '../lib/persistence.js';
+import { sfx } from '../lib/audio.js';
 
 /* Central app store: navigation + room/session state.
    Transport/room wiring (host/join controller) is attached in Step 04/08;
@@ -78,8 +79,12 @@ export function StoreProvider({ children }) {
   const wireSession = useCallback((ctrl) => {
     if (!ctrl || ctrl._wired) return;
     ctrl._wired = true;
+    let lastRosterCount = (ctrl.getInitialRoster ? ctrl.getInitialRoster() : []).length;
     ctrl.link.onMessage((msg) => {
       if (msg.t === 'roster') {
+        // a fresh seat appeared → the join chime (host gathering screen virality)
+        if (msg.players && msg.players.length > lastRosterCount) sfx('join');
+        lastRosterCount = msg.players ? msg.players.length : lastRosterCount;
         dispatch({ type: 'SET_ROSTER', roster: msg.players });
       } else if (msg.t === 'start') {
         dispatch({

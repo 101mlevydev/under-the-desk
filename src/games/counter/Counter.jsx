@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { buzz } from '../../lib/haptics.js';
+import { sfx } from '../../lib/audio.js';
 
 /* Event Counter player view. A big shared total + a giant tap target: every time the lecturer
    says the tracked phrase, everyone taps. The host counts authoritatively; we bump the number
@@ -30,6 +31,7 @@ export default function Counter({ link, me, isHost }) {
       } else if (msg.t === 'milestone') {
         setBurst(msg.total);
         buzz([20, 40, 80]);
+        sfx('milestone');
         if (burstTimer.current) clearTimeout(burstTimer.current);
         burstTimer.current = setTimeout(() => setBurst(null), 1500);
       }
@@ -43,6 +45,7 @@ export default function Counter({ link, me, isHost }) {
     setMine((m) => m + 1);
     setPulse(true);
     buzz(14);
+    sfx('tap');
     link.send({ t: 'tap' });
   }
 

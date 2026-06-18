@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { buzz } from '../../lib/haptics.js';
+import { sfx } from '../../lib/audio.js';
 
 /* Reaction Race player view. Big tap stage: wait (don't touch) → "עכשיו!" → tap. Shows your
    ms instantly (local) while the host ranks authoritatively. Early taps are flagged. */
@@ -23,11 +24,13 @@ export default function Reaction({ link, me }) {
         goIdRef.current = msg.goId;
         setPhase('go');
         buzz(20);
+        sfx('reveal');
       } else if (msg.t === 'falsestart') {
         if (msg.id === me.id) setPhase('early');
       } else if (msg.t === 'roundresult') {
         setResult({ order: msg.order, winnerId: msg.winnerId, penalized: msg.penalized });
         setPhase((p) => (p === 'early' ? 'early' : 'result'));
+        sfx(msg.winnerId === me.id ? 'win' : 'lock');
       }
     });
     return off;
@@ -40,6 +43,7 @@ export default function Reaction({ link, me }) {
       setMyMs(ms);
       setPhase('tapped');
       buzz([15, 25]);
+      sfx('tap');
       link.send({ t: 'tap', goId: goIdRef.current });
     } else if (phase === 'wait') {
       // jumped early — let the host penalize; show locally too

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useStore } from '../state/store.jsx';
 import Scoreboard from '../components/Scoreboard.jsx';
+import { sfx } from '../lib/audio.js';
 
 const CONFETTI = ['🎉', '✨', '🎊', '⭐', '🟩'];
 
@@ -12,6 +13,9 @@ export default function Results() {
   const { state, navigate, resetSession } = useStore();
   const r = state.results || { banner: 'סיבוב הסתיים', scores: [] };
   const winner = (r.scores || []).find((s) => s.id === r.winnerId) || (r.scores || [])[0];
+
+  // the big payoff — sound the fanfare once when the results screen lands
+  useEffect(() => { sfx('win'); }, []);
 
   function anotherRound() {
     // back to pick a game in the same room/session (the controller stays open)

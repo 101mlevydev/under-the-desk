@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { buzz } from '../../lib/haptics.js';
+import { sfx } from '../../lib/audio.js';
 
 /* Poll player view. Tap an option to lock your single vote; until the host reveals, you only see
    how many have voted (suspense). On reveal, animated bars show the distribution. The host gets
@@ -28,6 +29,7 @@ export default function Poll({ link, me, isHost }) {
         setCounts(msg.counts || []);
         setTotal(msg.total);
         buzz([20, 40]);
+        sfx('reveal');
       }
     });
     return off;
@@ -39,6 +41,7 @@ export default function Poll({ link, me, isHost }) {
     setMyVote(i);
     setTotal((t) => t + 1); // optimistic
     buzz([14, 22]);
+    sfx('lock');
     link.send({ t: 'vote', option: i });
   }
 

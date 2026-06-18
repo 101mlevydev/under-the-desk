@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { buildCard, completedLines, FREE } from './card.js';
 import { buzz } from '../../lib/haptics.js';
+import { sfx } from '../../lib/audio.js';
 
 /* Bingo player view (host and joiner alike). Derives its own card from the broadcast seed,
    marks cells optimistically + reports to the host, surfaces the claim CTA when a line is
@@ -28,6 +29,7 @@ export default function Bingo({ link, me }) {
       } else if (msg.t === 'win') {
         setWin({ name: msg.winner, mine: msg.winnerId === me.id });
         buzz(msg.winnerId === me.id ? [40, 60, 120] : 30);
+        sfx('win');
       } else if (msg.t === 'reject') {
         if (msg.to === me.id) {
           setReject(true);
@@ -53,7 +55,7 @@ export default function Bingo({ link, me }) {
     else next.delete(i);
     setMarks(next);
     setPoppingCell(on ? i : null);
-    if (on) buzz(12);
+    if (on) { buzz(12); sfx('tap'); }
     link.send({ t: 'mark', cell: i, on });
   }
 
@@ -61,6 +63,7 @@ export default function Bingo({ link, me }) {
     if (!hasLine || claimedRef.current || win) return;
     claimedRef.current = true;
     buzz([30, 40, 60]);
+    sfx('lock');
     link.send({ t: 'claim', line: lines[0].id });
     // allow a re-claim shortly if host rejects (e.g. line changed)
     setTimeout(() => { claimedRef.current = false; }, 1500);

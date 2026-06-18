@@ -3,6 +3,7 @@ import { useStore } from '../state/store.jsx';
 import { normalizeCode, isValidCode, parseRoomParam } from '../transport/roomCode.js';
 import { saveMe } from '../lib/persistence.js';
 import SuiteFooter from '../components/SuiteFooter.jsx';
+import { isMuted, toggleMuted, onMuteChange, sfx } from '../lib/audio.js';
 
 export default function Home() {
   const { state, set, navigate, toast, joinAsPlayer } = useStore();
@@ -10,6 +11,7 @@ export default function Home() {
   const [name, setName] = useState(state.me.name || '');
   const inputRef = useRef(null);
   const clock = useClock();
+  const muted = useMuted();
 
   // pick up a ?room=CODE deep link into the join field
   useEffect(() => {
@@ -55,7 +57,18 @@ export default function Home() {
     <>
       <div className="top">
         <span className="stealth"><span className="dot" />שקט · מצב חשאי</span>
-        <span>{clock} ▮▮▮</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button
+            className="sound-toggle"
+            onClick={() => { const m = toggleMuted(); if (!m) sfx('lock'); }}
+            aria-pressed={!muted}
+            aria-label={muted ? 'הפעלת צלילים' : 'השתקה'}
+            title={muted ? 'צלילים כבויים — הקישו להפעלה' : 'צלילים פעילים'}
+          >
+            {muted ? '🔇' : '🔊'}
+          </button>
+          <span>{clock} ▮▮▮</span>
+        </span>
       </div>
 
       <div className="home-hero">
@@ -100,6 +113,12 @@ export default function Home() {
       <SuiteFooter />
     </>
   );
+}
+
+function useMuted() {
+  const [m, setM] = useState(() => isMuted());
+  useEffect(() => onMuteChange(setM), []);
+  return m;
 }
 
 function useClock() {

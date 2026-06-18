@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { buzz } from '../../lib/haptics.js';
+import { sfx } from '../../lib/audio.js';
 
 /* Trivia player view. Lock one answer per question (fast + correct = more points). On reveal the
    correct option glows green, a wrong pick goes red, your points-gained pops, and a live scoreboard
@@ -26,6 +27,7 @@ export default function Trivia({ link, me, isHost }) {
         setCorrect(msg.correct);
         setDist(msg.dist || null);
         buzz([20, 40]);
+        sfx('reveal');
       }
     });
     return off;
@@ -40,6 +42,7 @@ export default function Trivia({ link, me, isHost }) {
     if (myAnswer != null || revealed) return;
     setMyAnswer(i);
     buzz([14, 22]);
+    sfx('lock');
     link.send({ t: 'answer', index: view.index, option: i });
   }
 
