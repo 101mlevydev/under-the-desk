@@ -3,12 +3,14 @@ import { useStore } from '../state/store.jsx';
 import InvitePanel from '../components/InvitePanel.jsx';
 import ConnectionStatus, { StatusPill } from '../components/ConnectionStatus.jsx';
 import { GAME_META } from '../games/gameRegistry.js';
+import { useWideHost, ProjectorInvite } from './Projector.jsx';
 
 /* Host gathering screen: opens the room over the broker, shows code + link + QR + live roster,
    and starts the game for everyone. On broker failure → same-device fallback (never a wall). */
 export default function Invite() {
   const { state, navigate, ensureHost, fallbackToSoloMode } = useStore();
   const meta = GAME_META[state.selectedGame];
+  const projector = useWideHost();
 
   // open the room (PeerJS host) on mount
   useEffect(() => {
@@ -18,6 +20,11 @@ export default function Invite() {
 
   function start() {
     navigate('game');
+  }
+
+  // big-screen spectator layout (host + wide viewport); phones still join normally
+  if (projector && state.connection !== 'failed') {
+    return <ProjectorInvite onStart={start} canStart={!!state.roomCode} />;
   }
 
   return (

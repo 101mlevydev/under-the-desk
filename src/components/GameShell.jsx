@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useStore } from '../state/store.jsx';
 import { gameRegistry, GAME_META } from '../games/gameRegistry.js';
+import { useWideHost, ProjectorGame } from '../screens/Projector.jsx';
 
 /* Mounts the active game's player component against the room link. The HOST also starts the
    game (and, in loopback, seeds companion seats + bots). A JOINER just mounts the same
@@ -8,6 +9,9 @@ import { gameRegistry, GAME_META } from '../games/gameRegistry.js';
    centralized session listener (store.wireSession). */
 export default function GameShell() {
   const { state, ensureHost, controllerRef } = useStore();
+  // projector frame only when a real room is open (peerjs) on a wide host screen —
+  // the same-device single phone (loopback) stays the plain phone layout.
+  const projector = useWideHost() && state.mode === 'peerjs';
   const gameId = state.selectedGame;
   const meta = GAME_META[gameId];
   const entry = gameRegistry[gameId] || meta;
@@ -50,13 +54,23 @@ export default function GameShell() {
     ? { ...state.me, id: 'host', name: state.me.name || 'מנחה' }
     : { ...state.me, id: ctrl.transport && ctrl.transport.id ? ctrl.transport.id : 'me' };
 
+  const body = GameComponent ? (
+    <GameComponent link={ctrl.link} isHost={isHost} me={me} players={state.roster} config={config} controller={ctrl} />
+  ) : (
+    <StubBoard meta={meta} isHost={isHost} onEnd={() => ctrl.endGame(stubResults(state.roster, meta))} />
+  );
+
+  if (projector) {
+    return (
+      <div data-accent={gameId} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <ProjectorGame>{body}</ProjectorGame>
+      </div>
+    );
+  }
+
   return (
     <div data-accent={gameId} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      {GameComponent ? (
-        <GameComponent link={ctrl.link} isHost={isHost} me={me} players={state.roster} config={config} controller={ctrl} />
-      ) : (
-        <StubBoard meta={meta} isHost={isHost} onEnd={() => ctrl.endGame(stubResults(state.roster, meta))} />
-      )}
+      {body}
     </div>
   );
 }
