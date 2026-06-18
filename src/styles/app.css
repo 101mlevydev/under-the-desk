@@ -471,6 +471,69 @@ input { font-family: inherit; }
 .confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .confetti span { position: absolute; font-size: 16px; animation: fall 2.6s linear infinite; opacity: 0.9; }
 @keyframes fall { from { transform: translateY(-30px) rotate(0); } to { transform: translateY(110vh) rotate(220deg); } }
+/* richer results confetti: a denser shower with a little horizontal drift + spin */
+.confetti.rich span { animation: fall-rich 2.6s linear infinite; will-change: transform; top: -8%; }
+@keyframes fall-rich {
+  0%   { transform: translate3d(0, -40px, 0) rotate(0); opacity: 0; }
+  8%   { opacity: 1; }
+  100% { transform: translate3d(14px, 112vh, 0) rotate(420deg); opacity: 0.95; }
+}
+
+/* ===== bigger win celebrations ===== */
+/* banner pops in with a little overshoot */
+.res-pop { animation: banner-pop 0.6s var(--ease) both; }
+@keyframes banner-pop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  55%  { transform: scale(1.12); opacity: 1; }
+  78%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+/* the winner block: zoom in + a celebratory shake settle */
+.winner-celebrate { animation: winner-in 0.7s var(--ease) both; }
+@keyframes winner-in {
+  0%   { transform: scale(0.4) rotate(-8deg); opacity: 0; }
+  50%  { transform: scale(1.18) rotate(4deg); opacity: 1; }
+  68%  { transform: scale(0.96) rotate(-3deg); }
+  82%  { transform: scale(1.05) rotate(2deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.winner-celebrate .crown { animation: crown-burst 0.7s var(--ease) both, bob 1.6s ease-in-out 0.7s infinite alternate; }
+@keyframes crown-burst {
+  0%   { transform: scale(0) rotate(-30deg); filter: drop-shadow(0 0 0 rgba(var(--accent-rgb), 0)); }
+  60%  { transform: scale(1.3) rotate(10deg); }
+  100% { transform: scale(1) rotate(0); filter: drop-shadow(0 6px 14px rgba(var(--accent-rgb), 0.35)); }
+}
+.winner-name {
+  font-size: 20px; font-weight: 900; color: var(--accent);
+  text-shadow: 0 0 18px rgba(var(--accent-rgb), 0.5); letter-spacing: 0.3px;
+}
+
+/* scoreboard rows stagger in as they tally */
+.tally-in .row { animation: row-in 0.5s var(--ease) both; }
+@keyframes row-in {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.tally-in .row.first { animation: row-in-first 0.6s var(--ease) both; }
+@keyframes row-in-first {
+  0%   { transform: translateY(10px) scale(0.96); opacity: 0; }
+  60%  { transform: translateY(0) scale(1.04); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+/* Counter milestone: a big zoom-punch on the number */
+.milestone-zoom { animation: milestone-zoom 0.6s var(--ease) both; }
+@keyframes milestone-zoom {
+  0%   { transform: scale(0.3); opacity: 0; }
+  55%  { transform: scale(1.22); opacity: 1; }
+  75%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.milestone-num { animation: num-glow 0.7s ease-in-out both; }
+@keyframes num-glow {
+  0%, 100% { text-shadow: 0 0 26px rgba(var(--accent-rgb), 0.55); }
+  50%      { text-shadow: 0 0 44px rgba(var(--accent-rgb), 0.9), 0 0 80px rgba(var(--accent-rgb), 0.5); }
+}
 
 /* ===== forms (content editor) ===== */
 .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }

@@ -90,8 +90,8 @@ export default function Counter({ link, me, isHost }) {
 
       {burst != null && (
         <div className="confetti win-overlay" aria-live="assertive">
-          <div className="win-card">
-            <div className="res-banner" style={{ fontSize: 52 }}>{burst}!</div>
+          <div className="win-card milestone-zoom">
+            <div className="res-banner milestone-num" style={{ fontSize: 64 }}>{burst}!</div>
             <div className="res-sub">עוד עשרה 🎉</div>
           </div>
         </div>

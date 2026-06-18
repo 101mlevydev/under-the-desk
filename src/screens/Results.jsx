@@ -3,7 +3,10 @@ import { useStore } from '../state/store.jsx';
 import Scoreboard from '../components/Scoreboard.jsx';
 import { sfx } from '../lib/audio.js';
 
-const CONFETTI = ['🎉', '✨', '🎊', '⭐', '🟩'];
+const CONFETTI = ['🎉', '✨', '🎊', '⭐', '🟩', '🎈', '💫', '🏆', '🥳', '🎉', '✨', '⭐'];
+const REDUCED = typeof window !== 'undefined' && window.matchMedia
+  ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  : false;
 
 const SHARE_URL_OVERRIDE = '';
 const shareUrl = (extra = '') => (SHARE_URL_OVERRIDE || (location.origin + location.pathname)) + extra;
@@ -28,19 +31,31 @@ export default function Results() {
 
   return (
     <div data-accent={r.accent || 'bingo'} style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative' }}>
-      <div className="confetti" aria-hidden>
+      <div className="confetti rich" aria-hidden>
         {CONFETTI.map((c, i) => (
-          <span key={i} style={{ insetInlineStart: `${12 + i * 19}%`, animationDelay: `${i * 0.45}s` }}>{c}</span>
+          <span
+            key={i}
+            style={{
+              insetInlineStart: `${4 + (i * 8.1) % 92}%`,
+              animationDelay: `${(i * 0.21) % 2.4}s`,
+              animationDuration: `${2.2 + (i % 4) * 0.5}s`,
+              fontSize: `${13 + (i % 3) * 5}px`,
+            }}
+          >
+            {c}
+          </span>
         ))}
       </div>
 
       <div className="res-top">
-        <div className="res-banner">{r.banner || 'סיום'}</div>
+        <div className="res-banner res-pop">{r.banner || 'סיום'}</div>
         {r.sub && <div className="res-sub">{r.sub}</div>}
       </div>
 
-      <div className="winner"><div className="crown">👑</div></div>
-      {winner && <div className="res-sub" style={{ textAlign: 'center' }}>{winner.name}</div>}
+      <div className="winner winner-celebrate">
+        <div className="crown">👑</div>
+        {winner && <div className="winner-name" dir="auto">{winner.name}</div>}
+      </div>
 
       <Scoreboard scores={r.scores || []} winnerId={r.winnerId} />
 
